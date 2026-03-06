@@ -16,7 +16,6 @@ from __future__ import annotations
 import numpy as np
 
 from varistar.models.harmonic import fourier_series, fit_fourier
-from varistar.models.gaussian import fit_double_super_gaussian
 
 
 # ---------------------------------------------------------------------------

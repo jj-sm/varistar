@@ -10,7 +10,6 @@ Use this when your data does not come from a supported survey adapter
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Literal
 
 import numpy as np
 import polars as pl

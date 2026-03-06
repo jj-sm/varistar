@@ -114,7 +114,7 @@ def load_csv(
         )
 
     # --- Build column arrays ---
-    col_idx = {name: header.index(name) for name in header}
+    # col_idx = {name: header.index(name) for name in header}
     n_cols = len(header)
 
     arrays: dict[str, list[float | str]] = {h: [] for h in header}

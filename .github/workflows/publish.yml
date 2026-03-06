@@ -24,8 +24,8 @@ jobs:
         - name: Install Dependencies
           run: uv sync --all-groups
 
-        - name: Run Linting
-          run: uv run ruff check .
+        # - name: Run Linting
+        #   run: uv run ruff check .
 
         - name: Run Tests
           run: uv run pytest

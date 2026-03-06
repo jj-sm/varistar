@@ -19,6 +19,10 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Astronomy",
 ]
+dependencies = [
+    "numpy",
+    "astropy",
+]
 
 [project.urls]
 Homepage = "https://github.com/jj-sm/ogle"
@@ -33,3 +37,9 @@ where = ["src"]
 
 [tool.twine.repositories]
 pypi = "https://upload.pypi.org/legacy/"
+
+[dependency-groups]
+dev = [
+"pytest>=7.0",
+"ruff>=0.3.0",
+]

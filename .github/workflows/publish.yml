@@ -7,20 +7,26 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true 
-          
-      - name: Set up Python
-        run: uv python install
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        
+        - name: Install uv
+          uses: astral-sh/setup-uv@v5
+          with:
+            enable-cache: true
+            
+        - name: Set up Python
+          run: uv python install
 
-      - name: Run Tests
-        run: uv run pytest
+        - name: Install Dependencies
+          run: uv sync --all-groups
+
+        - name: Run Linting
+          run: uv run ruff check .
+
+        - name: Run Tests
+          run: uv run pytest
 
   publish:
     needs: test

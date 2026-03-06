@@ -1,6 +1,6 @@
 ---
 name: 🐛 Bug Report
-about: Create a report to help us improve ogle
+about: Create a report to help us improve varistar
 title: '[BUG] '
 labels: bug
 assignees: ''
@@ -25,7 +25,7 @@ If applicable, add screenshots to help explain your problem.
 def print_world(hello) -> None:
     print(f"world {hello}")
 
-print_world(hello)
+print_world("hello")
 ```
 
 **Additional context**
@@ -34,4 +34,4 @@ Add any other context about the problem here.
 **Context and Enviroment Data:**
  - OS: [e.g. macOS 26.3.1]
  - Python Version: [e.g. 3.11]
- - ogle Version: [e.g. 0.1.0]
+ - varistar Version: [e.g. 0.1.0]

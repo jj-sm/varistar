@@ -1,6 +1,6 @@
 # Contributing to ogle
 
-First off, thank you for considering contributing to **ogle**! It's people like you that make the open-source community such a great place to learn, inspire, and create.
+First off, thank you for considering contributing to **varistar**! It's people like you that make the open-source community such a great place to learn, inspire, and create.
 
 ## How Can I Contribute?
 
@@ -14,7 +14,7 @@ First off, thank you for considering contributing to **ogle**! It's people like 
 
 ### Pull Requests
 1. **Fork** the repository.
-2. **Clone** your fork: `git clone https://github.com/<yourusername>/ogle.git`
+2. **Clone** your fork: `git clone https://github.com/<yourusername>/varistar.git`
 3. **Create a branch** for your changes: `git checkout -b feature/amazing-feature`
 4. **Commit** your changes: `git commit -m 'Add some amazing feature'`
 5. **Push** to the branch: `git push origin feature/amazing-feature`

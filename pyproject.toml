@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "ogle"
+name = "varistar"
 version = "0.1.0"
-description = "ogle is a Python package helps users to manage and interact with OGLE (Optical Gravitational Lensing Experiment) data."
+description = "varistar is a Python package helps users manage and interact with possible variable star's data."
 authors = [
     { name="Juan José Sánchez", email="pip@jjsm.science" }
 ]
@@ -25,9 +25,9 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/jj-sm/ogle"
-Repository = "https://github.com/jj-sm/ogle"
-Issues = "https://github.com/jj-sm/ogle/issues"
+Homepage = "https://docs.jjsm.science/varistar"
+Repository = "https://github.com/jj-sm/varistar"
+Issues = "https://github.com/jj-sm/varistar/issues"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -1,37 +1,38 @@
-# ogle 🔭
+# varistar 🌟
 
-![PyPI - Version](https://img.shields.io/pypi/v/ogle?style=flat-square)
-![PyPI - License](https://img.shields.io/pypi/l/ogle?style=flat-square)
-[![Python Versions](https://img.shields.io/pypi/pyversions/ogle.svg?style=flat-square)](https://pypi.org/project/ogle/)
+![PyPI - Version](https://img.shields.io/pypi/v/varistar?style=flat-square)
+![PyPI - License](https://img.shields.io/pypi/l/varistar?style=flat-square)
+[![Python Versions](https://img.shields.io/pypi/pyversions/varistar.svg?style=flat-square)](https://pypi.org/project/varistar/)
 
-**ogle** is a Python package designed to simplify the management, retrieval, and interaction with **Optical Gravitational Lensing Experiment (OGLE)** data. It provides a streamlined interface for astronomers and researchers to handle light-curve data and lensing events.
+**varistar** is a Python package designed to simplify the management and interaction with timeseries and lightcurve data 
+coming from multiple sources.
 
 ---
 
 ## Features
 
-* **Data Retrieval**: Automated utilities to fetch data from OGLE databases.
-* **Format Conversion**: Seamlessly convert OGLE-specific data into `astropy` tables or `pandas` DataFrames.
+* **Data Retrieval**: Automated utilities to fetch data from varistar databases.
+* **Format Conversion**: Seamlessly convert varistar-specific data into `astropy` tables or `pandas` DataFrames.
 * **Analysis Tools**: Functions for processing gravitational lensing light-curves.
 * **Modern Workflow**: Full support for `uv`, `pip`, and type-hinting for high-performance research.
 
 ## Installation
 
-Install the stable version from [PyPI](https://pypi.org/project/ogle/):
+Install the stable version from [PyPI](https://pypi.org/project/varistar/):
 
 ```bash
-pip install ogle
+pip install varistar
 ```
 
 Or, if you prefer using [uv](https://github.com/astral-sh/uv):
 
 ```bash
-uv add ogle
+uv add varistar
 ```
 
 ## Documentation and Usage
 
-All the docs can be found at [docs.jjsm.science/ogle](https://docs.jjsm.science/ogle)
+All the docs can be found at [docs.jjsm.science/varistar](https://docs.jjsm.science/varistar)
 
 ## Development
 
@@ -39,8 +40,8 @@ This project is built using the latest Python standards. If you are using this a
 
 1.  **Clone the repo**:
     ```bash
-    git clone https://github.com/jj-sm/ogle.git
-    cd ogle
+    git clone https://github.com/jj-sm/varistar.git
+    cd varistar
     ```
 2.  **Sync the environment (using uv)**:
     ```bash
@@ -60,11 +61,11 @@ This project is licensed under the **GNU General Public License v3 (GPLv3)**. Th
 Contributions make the scientific community stronger! 
 1. Check out the [Contributing Guidelines](CONTRIBUTING.md).
 2. Adhere to the [Code of Conduct](CODE_OF_CONDUCT.md).
-3. Open a [Feature Request](https://github.com/jj-sm/ogle/issues) for new ideas.
+3. Open a [Feature Request](https://github.com/jj-sm/varistar/issues) for new ideas.
 
 ## Citation
 
-If you use **ogle** in your research or publications, please cite it using the metadata provided in the `CITATION.cff` file, or click the **"Cite this repository"** button in the GitHub sidebar.
+If you use **varistar** in your research or publications, please cite it using the metadata provided in the `CITATION.cff` file, or click the **"Cite this repository"** button in the GitHub sidebar.
 
 ---
 *Maintained by [Juan José Sánchez Medina](mailto:pip@jjsm.science), BSc. Astronomy Student (Pontificia Universidad Católica de Chile)*

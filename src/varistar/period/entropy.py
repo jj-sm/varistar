@@ -193,7 +193,7 @@ def compute_aov(
 
     N = len(y)
     y_mean = float(np.mean(y))
-    # ss_total = float(np.sum((y - y_mean) ** 2))
+    # ss_total = float(np.sum((y - y_mean) ** 2)) s
 
     if verbose:
         print(f"AOV: {n_freqs} trial frequencies, {n_bins} bins...")

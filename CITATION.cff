@@ -1,0 +1,28 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: ogle Python Pakcage
+message: ogle is a Python package helps users to manage and interact with OGLE (Optical Gravitational Lensing Experiment) data.
+type: software
+authors:
+  - given-names: Juan José
+    family-names: Sánchez Medina
+    email: projects@jjsm.science
+    affiliation: Pontificia Universidad Católica de Chile
+    orcid: 'https://orcid.org/0009-0005-4685-695X'
+repository-code: 'https://github.com/jj-sm/ogle/'
+url: 'https://docs.jj-sm.science/ogle/'
+repository: 'https://github.com/jj-sm/ogle/'
+abstract: >-
+  ogle is a Python package helps users to manage and interact with OGLE (Optical Gravitational Lensing Experiment) data.
+  
+  It provides tools for downloading, processing, and analyzing OGLE data, making it easier for researchers to work with 
+  this valuable astronomical dataset such as light curves, timeseries and catalogs. With ogle, users can efficiently access 
+  and utilize OGLE data for their research and analysis needs.
+keywords:
+  - Python
+  - OGLE
+  - Astrophysics
+license: GNU General Public License v3.0
+date-released: '2026-03-07'

@@ -29,6 +29,9 @@ dependencies = [
     "seaborn>=0.13.2",
     "matplotlib>=3.7.5",
     "plotly>=6.6.0",
+    "hdbscan>=0.8.40",
+    "tqdm>=4.67.3",
+    "chime>=0.7.0",
 ]
 
 [project.urls]

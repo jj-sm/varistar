@@ -2,7 +2,9 @@ name: Test & Publish
 
 on:
   push:
-    tags: ["v*"]
+    tags:
+      - "v*"
+      - "v**"
   pull_request:
 
 jobs:

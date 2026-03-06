@@ -45,6 +45,7 @@ def _require_plotly():
 # Time series
 # ---------------------------------------------------------------------------
 
+
 def plot_timeseries(
     ts: "TimeSeries",
     mag_col: str | None = None,
@@ -83,19 +84,27 @@ def plot_timeseries(
     t, y, dy = df[ts.time_col], df[mag_col], df[err_col]
 
     fig = go.Figure()
-    fig.add_trace(go.Scatter(
-        x=t, y=y,
-        error_y=dict(type="data", array=dy, visible=True,
-                     color="rgba(100,100,100,0.4)", thickness=0.8),
-        mode="markers",
-        marker=dict(size=4, color="#2C3E50", opacity=0.75),
-        name="Data",
-        hovertemplate=(
-            f"HJD: %{{x:.4f}}<br>"
-            f"{band_name} mag: %{{y:.4f}}<br>"
-            f"±%{{error_y.array:.4f}}<extra></extra>"
-        ),
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=t,
+            y=y,
+            error_y=dict(
+                type="data",
+                array=dy,
+                visible=True,
+                color="rgba(100,100,100,0.4)",
+                thickness=0.8,
+            ),
+            mode="markers",
+            marker=dict(size=4, color="#2C3E50", opacity=0.75),
+            name="Data",
+            hovertemplate=(
+                f"HJD: %{{x:.4f}}<br>"
+                f"{band_name} mag: %{{y:.4f}}<br>"
+                f"±%{{error_y.array:.4f}}<extra></extra>"
+            ),
+        )
+    )
 
     fig.update_layout(
         title=title or ts.timeseries_id,
@@ -116,6 +125,7 @@ def plot_timeseries(
 # ---------------------------------------------------------------------------
 # Phase-folded light curve
 # ---------------------------------------------------------------------------
+
 
 def plot_phased(
     lc: "LightCurve",
@@ -158,30 +168,40 @@ def plot_phased(
     if not lc.periods and period is None:
         lc.run_ls()
 
-    best_p = float(period if period is not None else (lc.periods[0] if lc.periods else 1.0))
+    best_p = float(
+        period if period is not None else (lc.periods[0] if lc.periods else 1.0)
+    )
 
-    t  = ts.timeseries_df[ts.time_col].to_numpy()
-    y  = ts.timeseries_df[mag_col].to_numpy()
+    t = ts.timeseries_df[ts.time_col].to_numpy()
+    y = ts.timeseries_df[mag_col].to_numpy()
     dy = ts.timeseries_df[err_col].to_numpy()
     phase = ((t - t.min()) / best_p) % 1.0
 
     # Two cycles
     ph2 = np.concatenate([phase, phase + 1.0])
-    y2  = np.concatenate([y, y])
+    y2 = np.concatenate([y, y])
     dy2 = np.concatenate([dy, dy])
 
     fig = go.Figure()
 
     # Data scatter
-    fig.add_trace(go.Scatter(
-        x=ph2, y=y2,
-        error_y=dict(type="data", array=dy2, visible=True,
-                     color="rgba(100,100,100,0.3)", thickness=0.6),
-        mode="markers",
-        marker=dict(size=3, color="#2C3E50", opacity=0.5),
-        name="Data",
-        hovertemplate="Phase: %{x:.4f}<br>Mag: %{y:.4f}<extra></extra>",
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=ph2,
+            y=y2,
+            error_y=dict(
+                type="data",
+                array=dy2,
+                visible=True,
+                color="rgba(100,100,100,0.3)",
+                thickness=0.6,
+            ),
+            mode="markers",
+            marker=dict(size=3, color="#2C3E50", opacity=0.5),
+            name="Data",
+            hovertemplate="Phase: %{x:.4f}<br>Mag: %{y:.4f}<extra></extra>",
+        )
+    )
 
     # Fourier fit
     if show_fit:
@@ -189,12 +209,15 @@ def plot_phased(
         if popt is not None:
             x_fit = np.linspace(0.0, 2.0, 500)
             y_fit = fourier_series(x_fit % 1.0, *popt)
-            fig.add_trace(go.Scatter(
-                x=x_fit, y=y_fit,
-                mode="lines",
-                line=dict(color="#E74C3C", width=2),
-                name=f"Fourier ({n_harmonics}H)  MEA={mea:.4f}",
-            ))
+            fig.add_trace(
+                go.Scatter(
+                    x=x_fit,
+                    y=y_fit,
+                    mode="lines",
+                    line=dict(color="#E74C3C", width=2),
+                    name=f"Fourier ({n_harmonics}H)  MEA={mea:.4f}",
+                )
+            )
 
     fig.update_layout(
         title=title or f"{ts.timeseries_id}  |  P = {best_p:.5f} d",
@@ -212,6 +235,7 @@ def plot_phased(
 # ---------------------------------------------------------------------------
 # Periodogram
 # ---------------------------------------------------------------------------
+
 
 def plot_periodogram(
     lc: "LightCurve",
@@ -249,7 +273,7 @@ def plot_periodogram(
     if not lc.power_spectra:
         lc.run_ls()
 
-    freq  = lc.power_spectra["frequency"]
+    freq = lc.power_spectra["frequency"]
     power = lc.power_spectra["power"]
 
     x_data = freq if use_frequency else 1.0 / freq
@@ -257,34 +281,40 @@ def plot_periodogram(
 
     fig = go.Figure()
 
-    fig.add_trace(go.Scatter(
-        x=x_data, y=power,
-        mode="lines",
-        line=dict(color="#2C3E50", width=0.8),
-        name="LS Power",
-        hovertemplate=(
-            f"{xlabel[:-7] if use_frequency else 'Period'}: %{{x:.5f}}<br>"
-            f"Power: %{{y:.5f}}<extra></extra>"
-        ),
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=x_data,
+            y=power,
+            mode="lines",
+            line=dict(color="#2C3E50", width=0.8),
+            name="LS Power",
+            hovertemplate=(
+                f"{xlabel[:-7] if use_frequency else 'Period'}: %{{x:.5f}}<br>"
+                f"Power: %{{y:.5f}}<extra></extra>"
+            ),
+        )
+    )
 
     # Annotate top-5 peaks
     colors = ["#E74C3C", "#E67E22", "#F1C40F", "#2ECC71", "#3498DB"]
     for i, p in enumerate(lc.periods[:5]):
         f_peak = 1.0 / p
         x_peak = f_peak if use_frequency else p
-        idx    = np.argmin(np.abs(freq - f_peak))
-        pwr    = float(power[idx])
-        fig.add_trace(go.Scatter(
-            x=[x_peak], y=[pwr],
-            mode="markers+text",
-            marker=dict(size=8, color=colors[i], symbol="triangle-up"),
-            text=[f"P{i+1}={p:.4f}d"],
-            textposition="top center",
-            textfont=dict(size=9),
-            name=f"P{i+1} = {p:.5f} d",
-            showlegend=True,
-        ))
+        idx = np.argmin(np.abs(freq - f_peak))
+        pwr = float(power[idx])
+        fig.add_trace(
+            go.Scatter(
+                x=[x_peak],
+                y=[pwr],
+                mode="markers+text",
+                marker=dict(size=8, color=colors[i], symbol="triangle-up"),
+                text=[f"P{i + 1}={p:.4f}d"],
+                textposition="top center",
+                textfont=dict(size=9),
+                name=f"P{i + 1} = {p:.5f} d",
+                showlegend=True,
+            )
+        )
 
     # FAP reference lines
     if fap_levels:
@@ -295,7 +325,7 @@ def plot_periodogram(
                 line_dash=fap_styles.get(fap, "dot"),
                 line_color="rgba(128,128,128,0.7)",
                 line_width=1.0,
-                annotation_text=f"FAP {fap*100:.1f}%",
+                annotation_text=f"FAP {fap * 100:.1f}%",
                 annotation_position="right",
             )
 
@@ -314,6 +344,7 @@ def plot_periodogram(
 # ---------------------------------------------------------------------------
 # Group / mosaic (HTML export via subplot grid)
 # ---------------------------------------------------------------------------
+
 
 def mosaic_phased(
     group: "TestGroup",
@@ -356,14 +387,14 @@ def mosaic_phased(
 
     n_rows = (n_plots + n_cols - 1) // n_cols
     subplot_titles = [
-        getattr(obj, "timeseries_id", f"Star {i}")
-        for i, (obj, _) in enumerate(items)
+        getattr(obj, "timeseries_id", f"Star {i}") for i, (obj, _) in enumerate(items)
     ]
     # Pad to fill the grid
     subplot_titles += [""] * (n_rows * n_cols - n_plots)
 
     fig = make_subplots(
-        rows=n_rows, cols=n_cols,
+        rows=n_rows,
+        cols=n_cols,
         subplot_titles=subplot_titles,
         vertical_spacing=0.08,
         horizontal_spacing=0.05,
@@ -382,23 +413,25 @@ def mosaic_phased(
             continue
         best_p = float(periods[0])
 
-        t  = ts.timeseries_df[ts.time_col].to_numpy()
-        y  = ts.timeseries_df[ts.mag_col].to_numpy()
+        t = ts.timeseries_df[ts.time_col].to_numpy()
+        y = ts.timeseries_df[ts.mag_col].to_numpy()
         phase = ((t - t.min()) / best_p) % 1.0
         ph2 = np.concatenate([phase, phase + 1.0])
-        y2  = np.concatenate([y, y])
+        y2 = np.concatenate([y, y])
 
         colour = status_colors.get(label, "#2980B9")
 
         fig.add_trace(
             go.Scatter(
-                x=ph2, y=y2,
+                x=ph2,
+                y=y2,
                 mode="markers",
                 marker=dict(size=2, color=colour, opacity=0.5),
                 showlegend=False,
                 hovertemplate=f"Phase: %{{x:.3f}}<br>Mag: %{{y:.3f}}<extra>{label}</extra>",
             ),
-            row=row, col=col,
+            row=row,
+            col=col,
         )
         # Invert y-axis per panel
         fig.update_yaxes(autorange="reversed", row=row, col=col)

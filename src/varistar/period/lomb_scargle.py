@@ -18,6 +18,7 @@ from scipy.ndimage import gaussian_filter1d
 # Lomb-Scargle
 # ---------------------------------------------------------------------------
 
+
 def compute_ls(
     t: np.ndarray,
     y: np.ndarray,
@@ -112,9 +113,14 @@ def false_alarm_levels(
 
     ls = LombScargle(t, y, dy, normalization="standard")
     return {
-        level: float(ls.false_alarm_level(level, method="bootstrap",
-                                           minimum_frequency=min_freq,
-                                           maximum_frequency=max_freq))
+        level: float(
+            ls.false_alarm_level(
+                level,
+                method="bootstrap",
+                minimum_frequency=min_freq,
+                maximum_frequency=max_freq,
+            )
+        )
         for level in fap_levels
     }
 
@@ -122,6 +128,7 @@ def false_alarm_levels(
 # ---------------------------------------------------------------------------
 # Spectrum Resampling
 # ---------------------------------------------------------------------------
+
 
 def compute_sr(
     t: np.ndarray,

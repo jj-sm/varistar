@@ -12,6 +12,7 @@ Quick start
 >>> lc.find_best_period()
 >>> lc.plot_best()
 """
+
 __version__ = "0.1.0"
 
 from varistar.timeseries import TimeSeries

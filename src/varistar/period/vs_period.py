@@ -24,6 +24,7 @@ import numpy as np
 # Harmonic detection
 # ---------------------------------------------------------------------------
 
+
 def check_harmonics(
     periods: list[float],
     tolerance: float = 0.02,
@@ -95,6 +96,7 @@ def check_harmonics(
 # Phase coverage
 # ---------------------------------------------------------------------------
 
+
 def get_phase_coverage(
     t: np.ndarray,
     period: float,
@@ -139,6 +141,7 @@ def get_phase_coverage(
 # ---------------------------------------------------------------------------
 # Best-period selection
 # ---------------------------------------------------------------------------
+
 
 def select_best_period(
     t: np.ndarray,

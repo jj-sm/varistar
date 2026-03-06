@@ -67,7 +67,7 @@ class TestGroup:
         """Yield (obj, label_str) for every registered object."""
         return (
             [(obj, "GOOD") for obj in self.good_ts]
-            + [(obj, "BAD")  for obj in self.bad_ts]
+            + [(obj, "BAD") for obj in self.bad_ts]
             + [(obj, self.status_s) for obj in self.any_ts]
         )
 
@@ -129,7 +129,8 @@ class TestGroup:
 
         n_rows = math.ceil(n_plots / n_cols)
         fig, axes = plt.subplots(
-            n_rows, n_cols,
+            n_rows,
+            n_cols,
             figsize=(n_cols * 4, n_rows * 3),
             squeeze=False,
         )
@@ -144,15 +145,21 @@ class TestGroup:
                 plot_method(obj, ax=ax, **kwargs)
             except Exception as exc:
                 print(f"[plot_mosaic] Error on object {i}: {exc}")
-                ax.text(0.5, 0.5, "Error", ha="center", va="center",
-                        transform=ax.transAxes)
+                ax.text(
+                    0.5, 0.5, "Error", ha="center", va="center", transform=ax.transAxes
+                )
 
             colour = _status_colors.get(label, "steelblue")
             ax.text(
-                0.95, 0.95, label,
+                0.95,
+                0.95,
+                label,
                 transform=ax.transAxes,
-                color=colour, fontweight="bold",
-                ha="right", va="top", fontsize=8,
+                color=colour,
+                fontweight="bold",
+                ha="right",
+                va="top",
+                fontsize=8,
                 bbox=dict(facecolor="white", alpha=0.8, edgecolor=colour),
             )
 
@@ -262,8 +269,7 @@ class TestGroup:
             New group containing only the matching objects.
         """
         matching = [
-            obj for obj, _ in self._all_objects()
-            if condition(getattr(obj, attr, None))
+            obj for obj, _ in self._all_objects() if condition(getattr(obj, attr, None))
         ]
         kwargs: dict = {"good_ts": [], "bad_ts": [], "any_ts": []}
         kwargs[f"{target}_ts"] = matching
@@ -310,10 +316,12 @@ class TestGroup:
             periods = getattr(obj, "periods", None)
             if periods is None:
                 continue
-            rows.append({
-                "timeseries_id": getattr(obj, "timeseries_id", "unknown"),
-                "best_period":   float(periods[0]) if periods else None,
-                "n_candidates":  len(periods),
-                "status":        label,
-            })
+            rows.append(
+                {
+                    "timeseries_id": getattr(obj, "timeseries_id", "unknown"),
+                    "best_period": float(periods[0]) if periods else None,
+                    "n_candidates": len(periods),
+                    "status": label,
+                }
+            )
         return pl.DataFrame(rows)

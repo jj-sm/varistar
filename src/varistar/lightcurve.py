@@ -19,7 +19,10 @@ from pathlib import Path
 
 from varistar.timeseries import TimeSeries
 from varistar.models.harmonic import fourier_series, fit_fourier
-from varistar.models.gaussian import double_super_gaussian_model, fit_double_super_gaussian
+from varistar.models.gaussian import (
+    double_super_gaussian_model,
+    fit_double_super_gaussian,
+)
 from varistar.period.lomb_scargle import compute_ls, compute_sr
 from varistar.period.pdm import compute_pdm, compute_pdm2
 from varistar.period.vs_period import select_best_period
@@ -86,7 +89,9 @@ class LightCurve:
 
         t, y, dy = self._get_tyd()
         result = compute_ls(
-            t, y, dy,
+            t,
+            y,
+            dy,
             min_freq=min_freq,
             max_freq=max_freq,
             samples_per_peak=samples_per_peak,
@@ -123,10 +128,11 @@ class LightCurve:
         if self.timeseries.timeseries_df.is_empty():
             return 0.0
         t, y, _ = self._get_tyd()
-        result = compute_pdm(t, y, min_freq=min_freq, max_freq=max_freq,
-                             n_freq=n_freq, n_bins=n_bins)
+        result = compute_pdm(
+            t, y, min_freq=min_freq, max_freq=max_freq, n_freq=n_freq, n_bins=n_bins
+        )
         self.periods = result["periods"]
-        self.periods_map = {f"p{i+1}": p for i, p in enumerate(self.periods)}
+        self.periods_map = {f"p{i + 1}": p for i, p in enumerate(self.periods)}
         return result["best_period"]
 
     # Old name alias
@@ -143,11 +149,16 @@ class LightCurve:
         if self.timeseries.timeseries_df.is_empty():
             return 0.0
         t, y, _ = self._get_tyd()
-        result = compute_pdm2(t, y, min_freq=min_freq, max_freq=max_freq,
-                              samples_per_peak=samples_per_peak,
-                              phase_bins=phase_bins)
+        result = compute_pdm2(
+            t,
+            y,
+            min_freq=min_freq,
+            max_freq=max_freq,
+            samples_per_peak=samples_per_peak,
+            phase_bins=phase_bins,
+        )
         self.periods = result["periods"]
-        self.periods_map = {f"p{i+1}": p for i, p in enumerate(self.periods)}
+        self.periods_map = {f"p{i + 1}": p for i, p in enumerate(self.periods)}
         return result["best_period"]
 
     # Old name alias
@@ -165,11 +176,16 @@ class LightCurve:
         if self.timeseries.timeseries_df.is_empty():
             return 0.0
         t, y, dy = self._get_tyd()
-        result = compute_sr(t, y, dy,
-                            min_freq=min_freq, max_freq=max_freq,
-                            samples_per_peak=samples_per_peak,
-                            smoothing_sigma=smoothing_sigma,
-                            n_bootstrap=n_bootstrap)
+        result = compute_sr(
+            t,
+            y,
+            dy,
+            min_freq=min_freq,
+            max_freq=max_freq,
+            samples_per_peak=samples_per_peak,
+            smoothing_sigma=smoothing_sigma,
+            n_bootstrap=n_bootstrap,
+        )
         self.sr_stats = result
         self.periods = [result["best_period"]]
         self.periods_map = {"p1": result["best_period"]}
@@ -240,7 +256,7 @@ class LightCurve:
         if not self.power_spectra:
             self.run_ls()
 
-        freq  = self.power_spectra.get("frequency")
+        freq = self.power_spectra.get("frequency")
         power = self.power_spectra.get("power")
 
         ax, own = self._ax_or_figure(ax, fig_size)
@@ -261,8 +277,9 @@ class LightCurve:
         )
         ax.set_ylabel("Power", fontsize=lf)
         ax.set_xlabel(xlabel, fontsize=lf)
-        ax.tick_params(axis="both", which="both", direction="in",
-                       top=True, right=True, labelsize=8)
+        ax.tick_params(
+            axis="both", which="both", direction="in", top=True, right=True, labelsize=8
+        )
         ax.minorticks_on()
         ax.grid(True, which="major", linestyle="--", alpha=0.3)
         self._finalise(ax, own, save_path)
@@ -274,8 +291,9 @@ class LightCurve:
         ax: plt.Axes | None = None,
     ) -> None:
         """Plot the power spectrum on a frequency axis."""
-        self.plot_periodogram(use_frequency=True, fig_size=fig_size,
-                              save_path=save_path, ax=ax)
+        self.plot_periodogram(
+            use_frequency=True, fig_size=fig_size, save_path=save_path, ax=ax
+        )
 
     # ------------------------------------------------------------------
     # Plotting — phase-folded light curve  (merged from 3 original methods)
@@ -288,7 +306,7 @@ class LightCurve:
         err_col: str | None = None,
         band_name: str = "I",
         n_harmonics: int = 4,
-        fit_model: str = "fourier",   # 'fourier' | 'gaussian' | None
+        fit_model: str = "fourier",  # 'fourier' | 'gaussian' | None
         show_residuals: bool = False,
         fig_size: tuple = (8, 4),
         save_path: str | Path | None = None,
@@ -333,8 +351,8 @@ class LightCurve:
             return
 
         # --- Data ---
-        t  = ts.timeseries_df[ts.time_col].to_numpy()
-        y  = ts.timeseries_df[mag_col].to_numpy()
+        t = ts.timeseries_df[ts.time_col].to_numpy()
+        y = ts.timeseries_df[mag_col].to_numpy()
         dy = ts.timeseries_df[err_col].to_numpy()
         phase = ((t - t.min()) / best_p) % 1.0
 
@@ -350,8 +368,12 @@ class LightCurve:
             for i, colour in enumerate(dots):
                 ax.add_patch(
                     Ellipse(
-                        (0.05 + i * 0.08, 0.95), 0.02, 0.028,
-                        transform=ax.transAxes, color=colour, zorder=10,
+                        (0.05 + i * 0.08, 0.95),
+                        0.02,
+                        0.028,
+                        transform=ax.transAxes,
+                        color=colour,
+                        zorder=10,
                     )
                 )
 
@@ -363,55 +385,100 @@ class LightCurve:
             popt, _, _ = fit_fourier(phase, y, n_harmonics=n_harmonics)
             if popt is not None:
                 x_fit = np.linspace(0, 2, 400)
-                ax.plot(x_fit, fourier_series(x_fit % 1.0, *popt),
-                        color="crimson", lw=2, zorder=3, label="Fourier Fit")
+                ax.plot(
+                    x_fit,
+                    fourier_series(x_fit % 1.0, *popt),
+                    color="crimson",
+                    lw=2,
+                    zorder=3,
+                    label="Fourier Fit",
+                )
                 fit_func = lambda x, *p: fourier_series(x, *p)  # noqa: E731
 
         elif fit_model == "gaussian":
             popt, _ = fit_double_super_gaussian(phase, y)
             if popt is not None:
                 x_fit = np.linspace(0, 2, 400)
-                ax.plot(x_fit, double_super_gaussian_model(x_fit % 1.0, *popt),
-                        color="darkorange", lw=2, zorder=3, label="Super-Gaussian Fit")
+                ax.plot(
+                    x_fit,
+                    double_super_gaussian_model(x_fit % 1.0, *popt),
+                    color="darkorange",
+                    lw=2,
+                    zorder=3,
+                    label="Super-Gaussian Fit",
+                )
                 fit_func = lambda x, *p: double_super_gaussian_model(x, *p)  # noqa: E731
 
         # --- Data (2 cycles) ---
         ph2 = np.concatenate([phase, phase + 1.0])
-        y2  = np.concatenate([y, y])
+        y2 = np.concatenate([y, y])
         dy2 = np.concatenate([dy, dy])
 
-        ax.errorbar(ph2, y2, yerr=dy2, fmt="o", markersize=2,
-                    color="black", ecolor="lightgray", alpha=0.3, capsize=0,
-                    label="Data")
+        ax.errorbar(
+            ph2,
+            y2,
+            yerr=dy2,
+            fmt="o",
+            markersize=2,
+            color="black",
+            ecolor="lightgray",
+            alpha=0.3,
+            capsize=0,
+            label="Data",
+        )
 
         # Reference lines
-        ax.axhline(np.median(y), color="royalblue", ls="--", lw=1,
-                   alpha=0.6, label="Median")
-        ax.axhline(np.mean(y),   color="seagreen",  ls="--", lw=1,
-                   alpha=0.6, label="Mean")
+        ax.axhline(
+            np.median(y), color="royalblue", ls="--", lw=1, alpha=0.6, label="Median"
+        )
+        ax.axhline(np.mean(y), color="seagreen", ls="--", lw=1, alpha=0.6, label="Mean")
 
         # --- Residuals panel ---
         if ax_res is not None:
             if popt is not None and fit_func is not None:
-                res  = y - fit_func(phase, *popt)
+                res = y - fit_func(phase, *popt)
                 res2 = np.concatenate([res, res])
-                ax_res.errorbar(ph2, res2, yerr=dy2, fmt="o", markersize=2,
-                                color="crimson", ecolor="lightgray", alpha=0.4)
+                ax_res.errorbar(
+                    ph2,
+                    res2,
+                    yerr=dy2,
+                    fmt="o",
+                    markersize=2,
+                    color="crimson",
+                    ecolor="lightgray",
+                    alpha=0.4,
+                )
                 ax_res.axhline(0.0, color="black", lw=1, alpha=0.5)
                 r_med = np.median(res)
                 r_mad = np.median(np.abs(res - r_med)) * 1.4826  # Robust σ
-                ax_res.axhline(r_med + r_mad, color="darkorange", ls=":", lw=1, alpha=0.7)
-                ax_res.axhline(r_med - r_mad, color="darkorange", ls=":", lw=1, alpha=0.7)
+                ax_res.axhline(
+                    r_med + r_mad, color="darkorange", ls=":", lw=1, alpha=0.7
+                )
+                ax_res.axhline(
+                    r_med - r_mad, color="darkorange", ls=":", lw=1, alpha=0.7
+                )
                 ax_res.invert_yaxis()
             else:
-                ax_res.text(0.5, 0.5, "No Fit", ha="center", va="center",
-                            transform=ax_res.transAxes)
+                ax_res.text(
+                    0.5,
+                    0.5,
+                    "No Fit",
+                    ha="center",
+                    va="center",
+                    transform=ax_res.transAxes,
+                )
 
             ax_res.set_ylabel("Res", fontsize=8)
             ax_res.set_xlabel("Phase", fontsize=9)
             ax_res.grid(True, alpha=0.1)
-            ax_res.tick_params(axis="both", which="both", direction="in",
-                               top=True, right=True, labelsize=8)
+            ax_res.tick_params(
+                axis="both",
+                which="both",
+                direction="in",
+                top=True,
+                right=True,
+                labelsize=8,
+            )
             ax_res.set_xlim(-0.02, 2.02)
             plt.setp(ax.get_xticklabels(), visible=False)
         else:
@@ -423,8 +490,9 @@ class LightCurve:
         ax.set_ylabel(f"{band_name} mag", fontsize=lf)
         ax.invert_yaxis()
         ax.grid(True, alpha=0.1)
-        ax.tick_params(axis="both", which="both", direction="in",
-                       top=True, right=True, labelsize=8)
+        ax.tick_params(
+            axis="both", which="both", direction="in", top=True, right=True, labelsize=8
+        )
         ax.minorticks_on()
         ax.set_xlim(-0.02, 2.02)
 
@@ -492,12 +560,15 @@ class LightCurve:
         best_p = float(period_data["best_period"])
 
         dots: list[str] = []
-        if period_data.get("is_harmonic"):   dots.append("blue")
-        if period_data.get("not_periodic"):  dots.append("red")
-        if period_data.get("not_dominant"):  dots.append("orange")
+        if period_data.get("is_harmonic"):
+            dots.append("blue")
+        if period_data.get("not_periodic"):
+            dots.append("red")
+        if period_data.get("not_dominant"):
+            dots.append("orange")
 
         final_period = best_p
-        final_fit    = fit_model
+        final_fit = fit_model
 
         if force_fourier_harmonics is not None:
             # User explicitly requested forced Fourier — skip EB logic
@@ -505,16 +576,15 @@ class LightCurve:
             kwargs["n_harmonics"] = force_fourier_harmonics
         else:
             # EB check
-            is_eb, mea_1x, _ = score_eb(self, period=best_p, mag_col=mag_col,
-                                         mea_range=mea_range)
+            is_eb, mea_1x, _ = score_eb(
+                self, period=best_p, mag_col=mag_col, mea_range=mea_range
+            )
             if is_eb:
                 p_2x = best_p * 2.0
-                _, mea_2x = fit_double_super_gaussian(
-                    *self._phase_mag(p_2x, mag_col)
-                )
+                _, mea_2x = fit_double_super_gaussian(*self._phase_mag(p_2x, mag_col))
                 if mea_2x < mea_1x:
                     final_period = p_2x
-                    dots.append("black")   # Black dot = confirmed EB at 2×P
+                    dots.append("black")  # Black dot = confirmed EB at 2×P
                 final_fit = "gaussian"
 
         self.plot_phased(
@@ -546,9 +616,9 @@ class LightCurve:
     def to_dict(self) -> dict:
         return {
             "timeseries_id": self.timeseries.timeseries_id,
-            "periods":       [float(round(p, 7)) for p in self.periods],
-            "is_periodic":   self.is_periodic,
-            "is_harmonic":   self.is_harmonic,
+            "periods": [float(round(p, 7)) for p in self.periods],
+            "is_periodic": self.is_periodic,
+            "is_harmonic": self.is_harmonic,
         }
 
     # ------------------------------------------------------------------
@@ -558,9 +628,11 @@ class LightCurve:
     def _get_tyd(self) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
         """Extract time, magnitude, and error as numpy arrays."""
         df = self.timeseries.timeseries_df
-        tc, mc, ec = (self.timeseries.time_col,
-                      self.timeseries.mag_col,
-                      self.timeseries.err_col)
+        tc, mc, ec = (
+            self.timeseries.time_col,
+            self.timeseries.mag_col,
+            self.timeseries.err_col,
+        )
         return df[tc].to_numpy(), df[mc].to_numpy(), df[ec].to_numpy()
 
     def _phase_mag(

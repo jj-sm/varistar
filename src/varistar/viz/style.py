@@ -32,27 +32,27 @@ import numpy as np
 
 VARISTAR_COLORS: dict[str, str] = {
     # Data points
-    "data":        "#2C3E50",   # Dark slate
-    "data_alpha":  "#7F8C8D",   # Muted grey  (error bars)
+    "data": "#2C3E50",  # Dark slate
+    "data_alpha": "#7F8C8D",  # Muted grey  (error bars)
     # Model fits
-    "fourier":     "#E74C3C",   # Crimson
-    "gaussian":    "#E67E22",   # Amber
-    "reference":   "#2980B9",   # Steel blue  (mean / median lines)
+    "fourier": "#E74C3C",  # Crimson
+    "gaussian": "#E67E22",  # Amber
+    "reference": "#2980B9",  # Steel blue  (mean / median lines)
     # Status indicators
-    "good":        "#27AE60",   # Emerald
-    "bad":         "#C0392B",   # Alizarin
-    "harmonic":    "#2980B9",   # Blue dot
-    "not_periodic":"#E74C3C",   # Red dot
-    "not_dominant":"#F39C12",   # Orange dot
-    "eb_confirmed":"#2C3E50",   # Black dot
+    "good": "#27AE60",  # Emerald
+    "bad": "#C0392B",  # Alizarin
+    "harmonic": "#2980B9",  # Blue dot
+    "not_periodic": "#E74C3C",  # Red dot
+    "not_dominant": "#F39C12",  # Orange dot
+    "eb_confirmed": "#2C3E50",  # Black dot
     # Residuals
-    "residual":    "#E74C3C",   # Crimson
-    "sigma_band":  "#F39C12",   # Orange
+    "residual": "#E74C3C",  # Crimson
+    "sigma_band": "#F39C12",  # Orange
     # Periodogram
-    "pgram_line":  "#2C3E50",
-    "fap_10":      "#BDC3C7",
-    "fap_1":       "#95A5A6",
-    "fap_0p1":     "#7F8C8D",
+    "pgram_line": "#2C3E50",
+    "fap_10": "#BDC3C7",
+    "fap_1": "#95A5A6",
+    "fap_0p1": "#7F8C8D",
 }
 
 
@@ -62,42 +62,42 @@ VARISTAR_COLORS: dict[str, str] = {
 
 _SCIENCE_RC: dict = {
     # Font
-    "font.family":      "monospace",
-    "font.size":        10,
-    "axes.titlesize":   11,
-    "axes.labelsize":   10,
-    "xtick.labelsize":  8,
-    "ytick.labelsize":  8,
-    "legend.fontsize":  8,
+    "font.family": "monospace",
+    "font.size": 10,
+    "axes.titlesize": 11,
+    "axes.labelsize": 10,
+    "xtick.labelsize": 8,
+    "ytick.labelsize": 8,
+    "legend.fontsize": 8,
     # Ticks
-    "xtick.direction":  "in",
-    "ytick.direction":  "in",
-    "xtick.top":        True,
-    "ytick.right":      True,
+    "xtick.direction": "in",
+    "ytick.direction": "in",
+    "xtick.top": True,
+    "ytick.right": True,
     "xtick.minor.visible": True,
     "ytick.minor.visible": True,
     # Lines
-    "lines.linewidth":  0.9,
-    "axes.linewidth":   0.8,
+    "lines.linewidth": 0.9,
+    "axes.linewidth": 0.8,
     # Grid
-    "axes.grid":        False,
+    "axes.grid": False,
     # Saving
-    "savefig.dpi":      200,
-    "savefig.bbox":     "tight",
+    "savefig.dpi": 200,
+    "savefig.bbox": "tight",
     # Figure
     "figure.autolayout": True,
 }
 
 _POSTER_RC: dict = {
     **_SCIENCE_RC,
-    "font.size":        14,
-    "axes.titlesize":   16,
-    "axes.labelsize":   14,
-    "xtick.labelsize":  12,
-    "ytick.labelsize":  12,
-    "legend.fontsize":  12,
-    "lines.linewidth":  2.0,
-    "axes.linewidth":   1.5,
+    "font.size": 14,
+    "axes.titlesize": 16,
+    "axes.labelsize": 14,
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+    "legend.fontsize": 12,
+    "lines.linewidth": 2.0,
+    "axes.linewidth": 1.5,
 }
 
 
@@ -120,6 +120,7 @@ def reset_style() -> None:
 # Axis helpers used across multiple plot functions
 # ---------------------------------------------------------------------------
 
+
 def science_ticks(ax: plt.Axes, own_figure: bool = True) -> None:
     """
     Apply consistent tick styling to a single axis.
@@ -128,8 +129,9 @@ def science_ticks(ax: plt.Axes, own_figure: bool = True) -> None:
     standalone figures only (rotation inside mosaics is done per-axis by
     matplotlib).
     """
-    ax.tick_params(axis="both", which="both", direction="in",
-                   top=True, right=True, labelsize=8)
+    ax.tick_params(
+        axis="both", which="both", direction="in", top=True, right=True, labelsize=8
+    )
     ax.minorticks_on()
     if own_figure:
         try:
@@ -160,10 +162,15 @@ def add_status_badge(
         Axes-fraction coordinates (default: top-right).
     """
     ax.text(
-        x, y, label,
+        x,
+        y,
+        label,
         transform=ax.transAxes,
-        color=color, fontweight="bold",
-        ha="right", va="top", fontsize=8,
+        color=color,
+        fontweight="bold",
+        ha="right",
+        va="top",
+        fontsize=8,
         bbox=dict(facecolor="white", alpha=0.85, edgecolor=color, linewidth=0.8),
     )
 
@@ -191,12 +198,16 @@ def add_status_dots(
         Colour strings in left-to-right order.
     """
     from matplotlib.patches import Ellipse
+
     for i, colour in enumerate(dots):
         ax.add_patch(
             Ellipse(
-                (x0 + i * dx, y0), 0.022, 0.030,
+                (x0 + i * dx, y0),
+                0.022,
+                0.030,
                 transform=ax.transAxes,
-                color=colour, zorder=10,
+                color=colour,
+                zorder=10,
             )
         )
 
@@ -218,12 +229,14 @@ def fap_lines(
     orientation : str
         ``'horizontal'`` (power on y-axis, default) or ``'vertical'``.
     """
-    styles = {0.1: ("--", VARISTAR_COLORS["fap_10"]),
-              0.01: ("-.", VARISTAR_COLORS["fap_1"]),
-              0.001: (":", VARISTAR_COLORS["fap_0p1"])}
+    styles = {
+        0.1: ("--", VARISTAR_COLORS["fap_10"]),
+        0.01: ("-.", VARISTAR_COLORS["fap_1"]),
+        0.001: (":", VARISTAR_COLORS["fap_0p1"]),
+    }
     for fap, power in fap_levels.items():
         ls, color = styles.get(fap, (":", "gray"))
-        label = f"FAP {fap*100:.1f}%"
+        label = f"FAP {fap * 100:.1f}%"
         if orientation == "horizontal":
             ax.axhline(power, ls=ls, color=color, lw=0.8, alpha=0.8, label=label)
         else:

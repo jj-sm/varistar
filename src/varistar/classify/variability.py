@@ -27,6 +27,7 @@ import numpy as np
 # Individual index functions
 # ---------------------------------------------------------------------------
 
+
 def stetson_j(mag: np.ndarray, err: np.ndarray | None = None) -> float:
     """
     Stetson J index.
@@ -54,7 +55,7 @@ def stetson_j(mag: np.ndarray, err: np.ndarray | None = None) -> float:
     n = len(mag)
     if n < 2:
         return 0.0
-    sigma = float(np.sqrt(np.mean(err ** 2))) if err is not None else float(np.std(mag))
+    sigma = float(np.sqrt(np.mean(err**2))) if err is not None else float(np.std(mag))
     sigma = max(sigma, 1e-9)
     delta = (mag - np.mean(mag)) / sigma
     pairs = delta[:-1] * delta[1:]
@@ -82,11 +83,11 @@ def stetson_k(mag: np.ndarray, err: np.ndarray | None = None) -> float:
     n = len(mag)
     if n < 2:
         return 0.0
-    sigma = float(np.sqrt(np.mean(err ** 2))) if err is not None else float(np.std(mag))
+    sigma = float(np.sqrt(np.mean(err**2))) if err is not None else float(np.std(mag))
     sigma = max(sigma, 1e-9)
     delta = (mag - np.mean(mag)) / sigma
-    mean_abs  = float(np.mean(np.abs(delta)))
-    mean_sq   = float(np.mean(delta ** 2))
+    mean_abs = float(np.mean(np.abs(delta)))
+    mean_sq = float(np.mean(delta**2))
     return mean_abs / (np.sqrt(mean_sq) + 1e-9)
 
 
@@ -110,7 +111,7 @@ def eta_index(mag: np.ndarray) -> float:
     """
     if len(mag) < 2:
         return 2.0
-    num  = float(np.sum(np.diff(mag) ** 2))
+    num = float(np.sum(np.diff(mag) ** 2))
     denom = float(np.sum((mag - np.mean(mag)) ** 2)) + 1e-12
     return num / denom
 
@@ -134,7 +135,9 @@ def iqr_index(mag: np.ndarray) -> float:
     return q75 - q25
 
 
-def amplitude(mag: np.ndarray, percentile_range: tuple[float, float] = (5.0, 95.0)) -> float:
+def amplitude(
+    mag: np.ndarray, percentile_range: tuple[float, float] = (5.0, 95.0)
+) -> float:
     """
     Robust amplitude estimate: P95 − P5 of the magnitude distribution.
 
@@ -151,7 +154,10 @@ def amplitude(mag: np.ndarray, percentile_range: tuple[float, float] = (5.0, 95.
     -------
     float
     """
-    lo, hi = float(np.percentile(mag, percentile_range[0])), float(np.percentile(mag, percentile_range[1]))
+    lo, hi = (
+        float(np.percentile(mag, percentile_range[0])),
+        float(np.percentile(mag, percentile_range[1])),
+    )
     return hi - lo
 
 
@@ -172,17 +178,18 @@ def excess_variance(mag: np.ndarray, err: np.ndarray) -> float:
     -------
     float
     """
-    n    = len(mag)
+    n = len(mag)
     if n < 2:
         return 0.0
-    mean_mag  = float(np.mean(mag))
-    var_obs   = float(np.var(mag, ddof=1))
-    mean_err2 = float(np.mean(err ** 2))
-    return (var_obs - mean_err2) / (mean_mag ** 2 + 1e-12)
+    mean_mag = float(np.mean(mag))
+    var_obs = float(np.var(mag, ddof=1))
+    mean_err2 = float(np.mean(err**2))
+    return (var_obs - mean_err2) / (mean_mag**2 + 1e-12)
 
 
-def welch_stetson_i(mag1: np.ndarray, mag2: np.ndarray,
-                     err1: np.ndarray, err2: np.ndarray) -> float:
+def welch_stetson_i(
+    mag1: np.ndarray, mag2: np.ndarray, err1: np.ndarray, err2: np.ndarray
+) -> float:
     """
     Welch-Stetson I index for *two-band* simultaneous observations.
 
@@ -207,7 +214,7 @@ def welch_stetson_i(mag1: np.ndarray, mag2: np.ndarray,
         return 0.0
 
     def _delta(m, e):
-        sigma = max(float(np.sqrt(np.mean(e ** 2))), 1e-9)
+        sigma = max(float(np.sqrt(np.mean(e**2))), 1e-9)
         return (m - np.mean(m)) / sigma
 
     d1 = _delta(mag1, err1)
@@ -218,6 +225,7 @@ def welch_stetson_i(mag1: np.ndarray, mag2: np.ndarray,
 # ---------------------------------------------------------------------------
 # Composite: compute all indices at once
 # ---------------------------------------------------------------------------
+
 
 def compute_all_indices(ts) -> dict:
     """
@@ -238,12 +246,12 @@ def compute_all_indices(ts) -> dict:
     """
     empty = {
         "timeseries_id": getattr(ts, "timeseries_id", "unknown"),
-        "stetson_j":      0.0,
-        "stetson_k":      0.0,
-        "eta":            2.0,
-        "iqr":            0.0,
-        "amplitude":      0.0,
-        "excess_variance":0.0,
+        "stetson_j": 0.0,
+        "stetson_k": 0.0,
+        "eta": 2.0,
+        "iqr": 0.0,
+        "amplitude": 0.0,
+        "excess_variance": 0.0,
     }
 
     if ts.timeseries_df.is_empty():
@@ -253,11 +261,11 @@ def compute_all_indices(ts) -> dict:
     err = ts.timeseries_df[ts.err_col].to_numpy()
 
     return {
-        "timeseries_id":  ts.timeseries_id,
-        "stetson_j":      stetson_j(mag, err),
-        "stetson_k":      stetson_k(mag, err),
-        "eta":            eta_index(mag),
-        "iqr":            iqr_index(mag),
-        "amplitude":      amplitude(mag),
-        "excess_variance":excess_variance(mag, err),
+        "timeseries_id": ts.timeseries_id,
+        "stetson_j": stetson_j(mag, err),
+        "stetson_k": stetson_k(mag, err),
+        "eta": eta_index(mag),
+        "iqr": iqr_index(mag),
+        "amplitude": amplitude(mag),
+        "excess_variance": excess_variance(mag, err),
     }

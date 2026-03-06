@@ -40,6 +40,7 @@ _TESS_MAG_ZERO: float = 20.44
 # FITS file loader
 # ---------------------------------------------------------------------------
 
+
 def load_fits(
     filepath: str | Path,
     flux_column: str = "PDCSAP_FLUX",
@@ -99,17 +100,21 @@ def load_fits(
     with afits.open(str(path)) as hdul:
         # TESS LC products store the light curve in extension 1
         lc_ext = hdul[1]
-        data   = lc_ext.data
+        data = lc_ext.data
 
-        time    = data["TIME"].astype(np.float64)
-        flux    = data[flux_column].astype(np.float64)
+        time = data["TIME"].astype(np.float64)
+        flux = data[flux_column].astype(np.float64)
         err_col_fits = flux_column + "_ERR"
         flux_err = (
             data[err_col_fits].astype(np.float64)
             if err_col_fits in data.names
             else np.full_like(flux, np.nan)
         )
-        quality = data["QUALITY"].astype(np.int32) if "QUALITY" in data.names else np.zeros_like(time, dtype=np.int32)
+        quality = (
+            data["QUALITY"].astype(np.int32)
+            if "QUALITY" in data.names
+            else np.zeros_like(time, dtype=np.int32)
+        )
 
     # --- Quality masking ---
     good = (quality & quality_bitmask) == 0
@@ -138,17 +143,20 @@ def load_fits(
         mag, mag_err = flux, flux_err
 
     # --- Build DataFrame ---
-    df = pl.DataFrame({
-        time_col: time,
-        mag_col:  mag,
-        err_col:  mag_err,
-    })
+    df = pl.DataFrame(
+        {
+            time_col: time,
+            mag_col: mag,
+            err_col: mag_err,
+        }
+    )
     return df.drop_nulls(subset=[time_col, mag_col, err_col])
 
 
 # ---------------------------------------------------------------------------
 # lightkurve query loader
 # ---------------------------------------------------------------------------
+
 
 def load_from_tic(
     tic_id: int | str,
@@ -203,8 +211,8 @@ def load_from_tic(
     lc = search[0].download(quality_bitmask=quality_bitmask).normalize()
     lc = lc.remove_nans()
 
-    time     = lc.time.value.astype(np.float64) + 2_457_000.0
-    flux     = getattr(lc, flux_column).value.astype(np.float64)
+    time = lc.time.value.astype(np.float64) + 2_457_000.0
+    flux = getattr(lc, flux_column).value.astype(np.float64)
     flux_err = getattr(lc, flux_column + "_err", lc.flux_err).value.astype(np.float64)
 
     if as_magnitude:
@@ -222,17 +230,20 @@ def load_from_tic(
     else:
         mag, mag_err = flux, flux_err
 
-    df = pl.DataFrame({
-        time_col: time,
-        mag_col:  mag,
-        err_col:  mag_err,
-    })
+    df = pl.DataFrame(
+        {
+            time_col: time,
+            mag_col: mag,
+            err_col: mag_err,
+        }
+    )
     return df.drop_nulls(subset=[time_col, mag_col, err_col])
 
 
 # ---------------------------------------------------------------------------
 # Metadata helper
 # ---------------------------------------------------------------------------
+
 
 def tess_fits_metadata(filepath: str | Path) -> dict:
     """
@@ -251,12 +262,12 @@ def tess_fits_metadata(filepath: str | Path) -> dict:
     meta: dict = {}
     with afits.open(str(path)) as hdul:
         hdr = hdul[0].header
-        meta["tic_id"]   = hdr.get("TICID",   None)
-        meta["sector"]   = hdr.get("SECTOR",   None)
-        meta["camera"]   = hdr.get("CAMERA",   None)
-        meta["ccd"]      = hdr.get("CCD",      None)
-        meta["ra"]       = hdr.get("RA_OBJ",   None)
-        meta["dec"]      = hdr.get("DEC_OBJ",  None)
-        meta["tess_mag"] = hdr.get("TESSMAG",  None)
-        meta["exptime"]  = hdr.get("FRAMETIM", None)
+        meta["tic_id"] = hdr.get("TICID", None)
+        meta["sector"] = hdr.get("SECTOR", None)
+        meta["camera"] = hdr.get("CAMERA", None)
+        meta["ccd"] = hdr.get("CCD", None)
+        meta["ra"] = hdr.get("RA_OBJ", None)
+        meta["dec"] = hdr.get("DEC_OBJ", None)
+        meta["tess_mag"] = hdr.get("TESSMAG", None)
+        meta["exptime"] = hdr.get("FRAMETIM", None)
     return meta

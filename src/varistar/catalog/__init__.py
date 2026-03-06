@@ -19,7 +19,10 @@ from varistar.catalog.generic import load_csv, from_arrays
 from varistar.catalog.tess import load_fits, load_from_tic
 
 __all__ = [
-    "load_dat", "load_dat_directory",
-    "load_csv", "from_arrays",
-    "load_fits", "load_from_tic",
+    "load_dat",
+    "load_dat_directory",
+    "load_csv",
+    "from_arrays",
+    "load_fits",
+    "load_from_tic",
 ]

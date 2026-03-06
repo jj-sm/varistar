@@ -17,6 +17,7 @@ from scipy.optimize import curve_fit
 # Core model
 # ---------------------------------------------------------------------------
 
+
 def fourier_series(x: np.ndarray, *params) -> np.ndarray:
     """
     Evaluate a Fourier series at phase values x.
@@ -42,9 +43,8 @@ def fourier_series(x: np.ndarray, *params) -> np.ndarray:
     for i in range(n_harmonics):
         a = params[2 * i + 1]
         b = params[2 * i + 2]
-        result += (
-            a * np.cos(2.0 * np.pi * (i + 1) * x)
-            + b * np.sin(2.0 * np.pi * (i + 1) * x)
+        result += a * np.cos(2.0 * np.pi * (i + 1) * x) + b * np.sin(
+            2.0 * np.pi * (i + 1) * x
         )
     return result
 
@@ -52,6 +52,7 @@ def fourier_series(x: np.ndarray, *params) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # Fitting helper
 # ---------------------------------------------------------------------------
+
 
 def fit_fourier(
     phase: np.ndarray,
@@ -96,6 +97,7 @@ def fit_fourier(
 # ---------------------------------------------------------------------------
 # Fourier decomposition parameters
 # ---------------------------------------------------------------------------
+
 
 def amplitude_r21(popt: np.ndarray) -> float:
     """

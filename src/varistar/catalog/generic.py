@@ -20,6 +20,7 @@ import polars as pl
 # Primary loader
 # ---------------------------------------------------------------------------
 
+
 def load_csv(
     filepath: str | Path,
     time_col: str = "hjd",
@@ -88,8 +89,7 @@ def load_csv(
 
     # Strip comment lines and blank lines
     data_lines = [
-        ln for ln in lines
-        if ln.strip() and not ln.strip().startswith(comment_char)
+        ln for ln in lines if ln.strip() and not ln.strip().startswith(comment_char)
     ]
 
     if skip_rows:
@@ -105,19 +105,18 @@ def load_csv(
 
     # --- Parse header ---
     header = [c.strip() for c in header_line.split(sep)]
-    body   = data_lines[1:]
+    body = data_lines[1:]
 
     required = [time_col, mag_col, err_col]
-    missing  = [c for c in required if c not in header]
+    missing = [c for c in required if c not in header]
     if missing:
         raise KeyError(
-            f"Required columns {missing} not found in header. "
-            f"Available: {header}"
+            f"Required columns {missing} not found in header. Available: {header}"
         )
 
     # --- Build column arrays ---
     col_idx = {name: header.index(name) for name in header}
-    n_cols  = len(header)
+    n_cols = len(header)
 
     arrays: dict[str, list[float | str]] = {h: [] for h in header}
     for ln in body:
@@ -158,6 +157,7 @@ def load_csv(
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _detect_sep(line: str) -> str:
     """Heuristic separator detection: comma > tab > whitespace."""
     if "," in line:
@@ -181,6 +181,7 @@ def _to_float_series(name: str, raw: list[str]) -> pl.Series:
 # ---------------------------------------------------------------------------
 # Convenience: load from numpy / pandas arrays
 # ---------------------------------------------------------------------------
+
 
 def from_arrays(
     time: "np.ndarray",
@@ -208,8 +209,10 @@ def from_arrays(
     col_names = col_names or ["hjd", "mag", "err"]
     if len(col_names) != 3:
         raise ValueError("col_names must have exactly 3 elements.")
-    return pl.DataFrame({
-        col_names[0]: np.asarray(time,  dtype=np.float64),
-        col_names[1]: np.asarray(mag,   dtype=np.float64),
-        col_names[2]: np.asarray(err,   dtype=np.float64),
-    })
+    return pl.DataFrame(
+        {
+            col_names[0]: np.asarray(time, dtype=np.float64),
+            col_names[1]: np.asarray(mag, dtype=np.float64),
+            col_names[2]: np.asarray(err, dtype=np.float64),
+        }
+    )

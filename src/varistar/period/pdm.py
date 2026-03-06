@@ -23,6 +23,7 @@ import numpy as np
 # PDM (Stellingwerf 1978)
 # ---------------------------------------------------------------------------
 
+
 def compute_pdm(
     t: np.ndarray,
     y: np.ndarray,
@@ -97,6 +98,7 @@ def compute_pdm(
 # PDM2 / Binless PDM (Plavchan et al. 2008 variant)
 # ---------------------------------------------------------------------------
 
+
 def compute_pdm2(
     t: np.ndarray,
     y: np.ndarray,
@@ -135,7 +137,7 @@ def compute_pdm2(
         ``best_period``  — period with the lowest θ
     """
     y_centered = y - np.median(y)
-    total_variance = np.sum(y_centered ** 2) + 1e-12
+    total_variance = np.sum(y_centered**2) + 1e-12
 
     freq_step = 1.0 / (np.ptp(t) * samples_per_peak)
     frequencies = np.arange(min_freq, max_freq, freq_step)
@@ -170,14 +172,16 @@ def compute_pdm2(
         empty = bin_counts == 0
         if np.any(empty) and np.sum(~empty) > 1:
             bin_means[empty] = np.interp(
-                x_bins[empty], x_bins[~empty], bin_means[~empty],
+                x_bins[empty],
+                x_bins[~empty],
+                bin_means[~empty],
                 period=phase_bins,
             )
 
         # Piecewise-linear model: interpolate template at each observation's phase
         model_y = np.interp(phi_s, bin_centers, bin_means, period=1.0)
         residuals = y_s - model_y
-        theta[k] = np.sum(residuals ** 2) / total_variance
+        theta[k] = np.sum(residuals**2) / total_variance
 
     sorted_idx = np.argsort(theta)
     top_periods = (1.0 / frequencies[sorted_idx[:n_top]]).tolist()

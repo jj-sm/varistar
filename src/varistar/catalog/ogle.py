@@ -23,6 +23,7 @@ import polars as pl
 # Primary loader
 # ---------------------------------------------------------------------------
 
+
 def load_dat(
     filepath: str | Path,
     col_names: list[str] | None = None,
@@ -63,7 +64,9 @@ def load_dat(
 
     col_names = col_names or ["hjd", "mag_i", "m_error"]
     if len(col_names) != 3:
-        raise ValueError(f"col_names must have exactly 3 elements, got {len(col_names)}.")
+        raise ValueError(
+            f"col_names must have exactly 3 elements, got {len(col_names)}."
+        )
 
     rows: list[tuple[float, float, float]] = []
     with path.open("r") as fh:
@@ -75,7 +78,7 @@ def load_dat(
             if len(parts) < 3:
                 continue
             try:
-                t   = float(parts[0]) + time_offset
+                t = float(parts[0]) + time_offset
                 mag = float(parts[1])
                 err = float(parts[2])
             except ValueError:
@@ -85,20 +88,23 @@ def load_dat(
     if not rows:
         raise ValueError(f"No valid data rows found in: {path}")
 
-    t_arr   = np.array([r[0] for r in rows], dtype=np.float64)
+    t_arr = np.array([r[0] for r in rows], dtype=np.float64)
     mag_arr = np.array([r[1] for r in rows], dtype=np.float64)
     err_arr = np.array([r[2] for r in rows], dtype=np.float64)
 
-    return pl.DataFrame({
-        col_names[0]: t_arr,
-        col_names[1]: mag_arr,
-        col_names[2]: err_arr,
-    })
+    return pl.DataFrame(
+        {
+            col_names[0]: t_arr,
+            col_names[1]: mag_arr,
+            col_names[2]: err_arr,
+        }
+    )
 
 
 # ---------------------------------------------------------------------------
 # Metadata helpers
 # ---------------------------------------------------------------------------
+
 
 def parse_ogle_id(filepath: str | Path) -> dict:
     """
@@ -124,7 +130,7 @@ def parse_ogle_id(filepath: str | Path) -> dict:
     stem = Path(filepath).stem
     parts = stem.split("-")
 
-    field    = parts[1] if len(parts) >= 3 else ""
+    field = parts[1] if len(parts) >= 3 else ""
     sequence = parts[-1] if len(parts) >= 2 else ""
 
     return {"stem": stem, "field": field, "sequence": sequence}

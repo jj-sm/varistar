@@ -34,6 +34,7 @@ import numpy as np
 # Conditional Entropy
 # ---------------------------------------------------------------------------
 
+
 def compute_ce(
     t: np.ndarray,
     y: np.ndarray,
@@ -84,29 +85,27 @@ def compute_ce(
     if T_baseline == 0.0:
         raise ValueError("All observations have the same time stamp.")
 
-    freq_step  = 1.0 / (T_baseline * samples_per_peak)
+    freq_step = 1.0 / (T_baseline * samples_per_peak)
     frequencies = np.arange(min_freq, max_freq, freq_step)
-    n_freqs     = len(frequencies)
-    ce_stats    = np.zeros(n_freqs)
+    n_freqs = len(frequencies)
+    ce_stats = np.zeros(n_freqs)
 
     if verbose:
-        print(f"CE: {n_freqs} trial frequencies, "
-              f"{n_phase_bins}×{n_mag_bins} grid...")
+        print(f"CE: {n_freqs} trial frequencies, {n_phase_bins}×{n_mag_bins} grid...")
 
     # Normalise magnitudes to [0, 1] once (outside the loop)
     y_min, y_max = y.min(), y.max()
     y_norm = (y - y_min) / (y_max - y_min + 1e-12)
 
     phase_edges = np.linspace(0.0, 1.0, n_phase_bins + 1)
-    mag_edges   = np.linspace(0.0, 1.0, n_mag_bins   + 1)
+    mag_edges = np.linspace(0.0, 1.0, n_mag_bins + 1)
 
     for k, freq in enumerate(frequencies):
         period = 1.0 / freq
-        phase  = (t / period) % 1.0
+        phase = (t / period) % 1.0
 
         # 2-D histogram: p(phase_bin, mag_bin)
-        counts, _, _ = np.histogram2d(phase, y_norm,
-                                       bins=[phase_edges, mag_edges])
+        counts, _, _ = np.histogram2d(phase, y_norm, bins=[phase_edges, mag_edges])
         p_joint = counts / (counts.sum() + 1e-12)
 
         # Marginal over magnitude bins → p(phase)
@@ -127,8 +126,8 @@ def compute_ce(
 
     return {
         "frequencies": frequencies,
-        "ce":          ce_stats,
-        "periods":     top_periods,
+        "ce": ce_stats,
+        "periods": top_periods,
         "best_period": top_periods[0],
     }
 
@@ -136,6 +135,7 @@ def compute_ce(
 # ---------------------------------------------------------------------------
 # Analysis of Variance (AOV)
 # ---------------------------------------------------------------------------
+
 
 def compute_aov(
     t: np.ndarray,
@@ -186,14 +186,14 @@ def compute_aov(
     if T_baseline == 0.0:
         raise ValueError("All observations have the same time stamp.")
 
-    freq_step   = 1.0 / (T_baseline * samples_per_peak)
+    freq_step = 1.0 / (T_baseline * samples_per_peak)
     frequencies = np.arange(min_freq, max_freq, freq_step)
-    n_freqs     = len(frequencies)
-    aov_stats   = np.zeros(n_freqs)
+    n_freqs = len(frequencies)
+    aov_stats = np.zeros(n_freqs)
 
-    N          = len(y)
-    y_mean     = float(np.mean(y))
-    ss_total   = float(np.sum((y - y_mean) ** 2))
+    N = len(y)
+    y_mean = float(np.mean(y))
+    ss_total = float(np.sum((y - y_mean) ** 2))
 
     if verbose:
         print(f"AOV: {n_freqs} trial frequencies, {n_bins} bins...")
@@ -202,21 +202,21 @@ def compute_aov(
 
     for k, freq in enumerate(frequencies):
         period = 1.0 / freq
-        phase  = (t / period) % 1.0
-        idx    = np.digitize(phase, bin_edges) - 1
+        phase = (t / period) % 1.0
+        idx = np.digitize(phase, bin_edges) - 1
 
         ss_between = 0.0
-        ss_within  = 0.0
+        ss_within = 0.0
 
         for b in range(n_bins):
             mask = idx == b
-            nb   = int(np.sum(mask))
+            nb = int(np.sum(mask))
             if nb < 1:
                 continue
-            yb          = y[mask]
-            bin_mean    = float(np.mean(yb))
+            yb = y[mask]
+            bin_mean = float(np.mean(yb))
             ss_between += nb * (bin_mean - y_mean) ** 2
-            ss_within  += float(np.sum((yb - bin_mean) ** 2))
+            ss_within += float(np.sum((yb - bin_mean) ** 2))
 
         # Avoid division by zero for degenerate cases
         denom = ss_within * (n_bins - 1)
@@ -226,12 +226,12 @@ def compute_aov(
             aov_stats[k] = 0.0
 
     # Highest AOV = best period
-    sorted_idx  = np.argsort(aov_stats)[::-1]
+    sorted_idx = np.argsort(aov_stats)[::-1]
     top_periods = (1.0 / frequencies[sorted_idx[:n_top]]).tolist()
 
     return {
         "frequencies": frequencies,
-        "aov":         aov_stats,
-        "periods":     top_periods,
+        "aov": aov_stats,
+        "periods": top_periods,
         "best_period": top_periods[0],
     }

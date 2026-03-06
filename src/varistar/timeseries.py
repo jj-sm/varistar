@@ -43,7 +43,9 @@ class TimeSeries:
         time_scale: str,
         colnames: list[str] | None = None,
     ) -> None:
-        self.colnames: list[str] = colnames if colnames is not None else ["hjd", "mag_i", "m_error"]
+        self.colnames: list[str] = (
+            colnames if colnames is not None else ["hjd", "mag_i", "m_error"]
+        )
         self.timeseries_df: pl.DataFrame = pl.DataFrame()
         self.timeseries_df_orig: pd.DataFrame = pd.DataFrame()
         self.timeseries_id: str = ""
@@ -147,9 +149,11 @@ class TimeSeries:
         try:
             if path.suffix.lower() == ".dat":
                 from varistar.catalog.ogle import load_dat
+
                 self.timeseries_df = load_dat(str(path), col_names=self.colnames)
             else:
                 from varistar.catalog.generic import load_csv
+
                 self.timeseries_df = load_csv(
                     str(path),
                     time_col=self.time_col,
@@ -198,8 +202,10 @@ class TimeSeries:
         self.timeseries_df = self.timeseries_df.filter(
             pl.col(self.err_col) <= max_error
         )
-        print(f"[clean_by_error] Removed {before - len(self.timeseries_df)} points "
-              f"(err > {max_error}).")
+        print(
+            f"[clean_by_error] Removed {before - len(self.timeseries_df)} points "
+            f"(err > {max_error})."
+        )
 
     def mask_iqr_outliers(
         self,
@@ -236,10 +242,12 @@ class TimeSeries:
         temp = self.timeseries_df.with_columns(
             (pl.col(err) / pl.col(col)).alias("_frac_err")
         )
-        q = temp.select([
-            pl.col("_frac_err").quantile(0.25).alias("q1"),
-            pl.col("_frac_err").quantile(0.75).alias("q3"),
-        ])
+        q = temp.select(
+            [
+                pl.col("_frac_err").quantile(0.25).alias("q1"),
+                pl.col("_frac_err").quantile(0.75).alias("q3"),
+            ]
+        )
         q1, q3 = q[0, "q1"], q[0, "q3"]
         iqr = q3 - q1
         mask = (temp["_frac_err"] < q1 - k * iqr) | (temp["_frac_err"] > q3 + k * iqr)
@@ -285,10 +293,12 @@ class TimeSeries:
 
         df = self.timeseries_df.clone()
         for _ in range(max_iter):
-            s = df.select([
-                pl.col(column).median().alias("med"),
-                pl.col(column).std().alias("std"),
-            ])
+            s = df.select(
+                [
+                    pl.col(column).median().alias("med"),
+                    pl.col(column).std().alias("std"),
+                ]
+            )
             med, std = s[0, "med"], s[0, "std"]
             lo, hi = med - n_sigma * std, med + n_sigma * std
             new_df = df.filter((pl.col(column) >= lo) & (pl.col(column) <= hi))
@@ -322,11 +332,11 @@ class TimeSeries:
         def _col_stats(col: str) -> dict:
             s = self.timeseries_df[col]
             return {
-                "count":  len(s),
-                "mean":   s.mean(),
-                "std":    s.std(),
-                "min":    s.min(),
-                "max":    s.max(),
+                "count": len(s),
+                "mean": s.mean(),
+                "std": s.std(),
+                "min": s.min(),
+                "max": s.max(),
                 "median": s.median(),
             }
 
@@ -374,8 +384,8 @@ class TimeSeries:
         diffs = np.diff(t)
         return {
             "median_cadence": float(np.median(diffs)),
-            "min_cadence":    float(np.min(diffs)),
-            "max_cadence":    float(np.max(diffs)),
+            "min_cadence": float(np.min(diffs)),
+            "max_cadence": float(np.max(diffs)),
         }
 
     # ------------------------------------------------------------------
@@ -398,24 +408,31 @@ class TimeSeries:
             return
 
         df = self.timeseries_df.with_columns(
-            (pl.col(self.time_col) / time_window).round().cast(pl.Int64).alias("_bin_id")
+            (pl.col(self.time_col) / time_window)
+            .round()
+            .cast(pl.Int64)
+            .alias("_bin_id")
         )
         binned = (
             df.group_by("_bin_id")
-            .agg([
-                pl.col(self.time_col).mean(),
-                pl.col(self.mag_col).mean(),
-                (
-                    pl.col(self.err_col).pow(2).sum().sqrt()
-                    / pl.col(self.err_col).count()
-                ).alias(self.err_col),
-            ])
+            .agg(
+                [
+                    pl.col(self.time_col).mean(),
+                    pl.col(self.mag_col).mean(),
+                    (
+                        pl.col(self.err_col).pow(2).sum().sqrt()
+                        / pl.col(self.err_col).count()
+                    ).alias(self.err_col),
+                ]
+            )
             .sort(self.time_col)
         )
         n_before = len(self.timeseries_df)
         self.timeseries_df = binned.select(self.colnames)
-        print(f"[bin_data] {n_before} → {len(self.timeseries_df)} points "
-              f"(window={time_window} d).")
+        print(
+            f"[bin_data] {n_before} → {len(self.timeseries_df)} points "
+            f"(window={time_window} d)."
+        )
 
     # ------------------------------------------------------------------
     # Export
@@ -433,9 +450,9 @@ class TimeSeries:
         """Return a flat dict of key attributes for DataFrame export."""
         return {
             "timeseries_id": self.timeseries_id,
-            "magnitude":     self.magnitude,
-            "time_scale":    self.time_scale,
-            "data_points":   len(self.timeseries_df),
+            "magnitude": self.magnitude,
+            "time_scale": self.time_scale,
+            "data_points": len(self.timeseries_df),
             "baseline_days": self.get_baseline(),
         }
 
@@ -470,8 +487,9 @@ class TimeSeries:
     @staticmethod
     def _science_ticks(ax: plt.Axes, own_figure: bool) -> None:
         """Apply common tick styling."""
-        ax.tick_params(axis="both", which="both", direction="in",
-                       top=True, right=True, labelsize=8)
+        ax.tick_params(
+            axis="both", which="both", direction="in", top=True, right=True, labelsize=8
+        )
         ax.minorticks_on()
         if own_figure:
             ax.ticklabel_format(useOffset=False, style="plain", axis="x")
@@ -515,8 +533,14 @@ class TimeSeries:
 
         if plot_df.is_empty():
             if ax is not None:
-                ax.text(0.5, 0.5, "No Data", ha="center", va="center",
-                        transform=ax.transAxes)
+                ax.text(
+                    0.5,
+                    0.5,
+                    "No Data",
+                    ha="center",
+                    va="center",
+                    transform=ax.transAxes,
+                )
             else:
                 print("[plot_timeseries] Warning: no data to plot.")
             return
@@ -529,16 +553,25 @@ class TimeSeries:
         ax, own = self._ax_or_figure(ax, fig_size)
 
         ax.errorbar(
-            x, data[mag_col], yerr=data[err_col],
-            fmt="o", color="steelblue", ecolor="gray",
-            markersize=3, capsize=2, alpha=0.7, elinewidth=0.8,
+            x,
+            data[mag_col],
+            yerr=data[err_col],
+            fmt="o",
+            color="steelblue",
+            ecolor="gray",
+            markersize=3,
+            capsize=2,
+            alpha=0.7,
+            elinewidth=0.8,
         )
 
         tf = 14 if own else 10
         lf = 12 if own else 9
         ax.set_title(self.timeseries_id, fontsize=tf)
         ax.set_ylabel(f"{band_name} mag", fontsize=lf)
-        ax.set_xlabel("Time (Days)" if set_time_to_zero else self.time_scale, fontsize=lf)
+        ax.set_xlabel(
+            "Time (Days)" if set_time_to_zero else self.time_scale, fontsize=lf
+        )
         ax.invert_yaxis()
         self._science_ticks(ax, own)
         self._finalise(ax, own, save_path)
@@ -578,16 +611,28 @@ class TimeSeries:
             np_masks = [np.array(m).flatten() for m in masks]
 
             # Kept points
-            combined = np.logical_or.reduce(np_masks) if np_masks else np.zeros(len(pdf), dtype=bool)
+            combined = (
+                np.logical_or.reduce(np_masks)
+                if np_masks
+                else np.zeros(len(pdf), dtype=bool)
+            )
             kept = pdf[~combined]
             ax.errorbar(
-                kept[self.time_col], kept[self.mag_col], yerr=kept[self.err_col],
-                fmt="o", color="steelblue", ecolor="gray",
-                markersize=3, capsize=2, alpha=0.4, elinewidth=0.8, label="Kept",
+                kept[self.time_col],
+                kept[self.mag_col],
+                yerr=kept[self.err_col],
+                fmt="o",
+                color="steelblue",
+                ecolor="gray",
+                markersize=3,
+                capsize=2,
+                alpha=0.4,
+                elinewidth=0.8,
+                label="Kept",
             )
 
             # Discarded subsets
-            _colors  = ["crimson", "forestgreen", "darkorange", "purple", "black"]
+            _colors = ["crimson", "forestgreen", "darkorange", "purple", "black"]
             _markers = ["x", "s", "^", "d", "v"]
             for i, mask in enumerate(np_masks):
                 sub = pdf[mask]
@@ -595,12 +640,16 @@ class TimeSeries:
                     continue
                 lbl = labels[i] if (labels and i < len(labels)) else f"Method {i + 1}"
                 ax.errorbar(
-                    sub[self.time_col], sub[self.mag_col], yerr=sub[self.err_col],
+                    sub[self.time_col],
+                    sub[self.mag_col],
+                    yerr=sub[self.err_col],
                     fmt=_markers[i % len(_markers)],
                     markersize=4,
                     color=_colors[i % len(_colors)],
                     ecolor=_colors[i % len(_colors)],
-                    elinewidth=1, alpha=0.9, capsize=2,
+                    elinewidth=1,
+                    alpha=0.9,
+                    capsize=2,
                     label=f"{lbl} (#{len(sub)})",
                 )
 
@@ -647,18 +696,31 @@ class TimeSeries:
 
         ax, own = self._ax_or_figure(ax, fig_size)
 
-        ax.hist(data, bins=30, density=True, alpha=0.6,
-                color="royalblue", edgecolor="navy", label="Data")
+        ax.hist(
+            data,
+            bins=30,
+            density=True,
+            alpha=0.6,
+            color="royalblue",
+            edgecolor="navy",
+            label="Data",
+        )
         x = np.linspace(mu - 4 * sigma, mu + 4 * sigma, 200)
-        ax.plot(x, scipy_stats.norm.pdf(x, mu, sigma),
-                color="crimson", lw=2, label=f"Normal fit\n(μ={mu:.3f}, σ={sigma:.3f})")
+        ax.plot(
+            x,
+            scipy_stats.norm.pdf(x, mu, sigma),
+            color="crimson",
+            lw=2,
+            label=f"Normal fit\n(μ={mu:.3f}, σ={sigma:.3f})",
+        )
 
         tf, lf = (14, 12) if own else (10, 9)
         ax.set_title(f"Distribution: {self.timeseries_id}", fontsize=tf)
         ax.set_xlabel(f"{band_name} Magnitude", fontsize=lf)
         ax.set_ylabel("Probability Density", fontsize=lf)
-        ax.tick_params(axis="both", which="both", direction="in",
-                       top=True, right=True, labelsize=8)
+        ax.tick_params(
+            axis="both", which="both", direction="in", top=True, right=True, labelsize=8
+        )
         ax.minorticks_on()
         ax.legend(loc="best", fontsize=8 if not own else 9, frameon=True)
         self._finalise(ax, own, save_path)

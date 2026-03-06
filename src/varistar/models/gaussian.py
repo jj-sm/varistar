@@ -24,6 +24,7 @@ from scipy.optimize import curve_fit
 # Phase-wrapping helper (shared by all models)
 # ---------------------------------------------------------------------------
 
+
 def _phase_dist(x: np.ndarray, center: float) -> np.ndarray:
     """Circular distance on the unit interval: handles 0/1 wrap-around."""
     delta = np.abs(x - center)
@@ -33,6 +34,7 @@ def _phase_dist(x: np.ndarray, center: float) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # Single-dip models
 # ---------------------------------------------------------------------------
+
 
 def gaussian_model(
     x: np.ndarray,
@@ -76,6 +78,7 @@ def super_gaussian_model(
 # Double-dip models  (primary + secondary eclipse)
 # ---------------------------------------------------------------------------
 
+
 def double_gaussian_model(
     x: np.ndarray,
     baseline: float,
@@ -116,6 +119,7 @@ def double_super_gaussian_model(
 # Fitting helpers
 # ---------------------------------------------------------------------------
 
+
 def fit_double_super_gaussian(
     phase: np.ndarray,
     mag: np.ndarray,
@@ -149,13 +153,14 @@ def fit_double_super_gaussian(
 
     # [base, amp1, cen1, wid1, shape1, amp2, cen2, wid2, shape2]
     p0 = [baseline, amp, center, 0.05, 2.0, amp * 0.5, (center + 0.5) % 1.0, 0.05, 2.0]
-    lower = [-np.inf, 0, 0,   0.001, 0.5, 0, 0,   0.001, 0.5]
-    upper = [ np.inf, np.inf, 1, 0.5, 10.0, np.inf, 1, 0.5, 10.0]
+    lower = [-np.inf, 0, 0, 0.001, 0.5, 0, 0, 0.001, 0.5]
+    upper = [np.inf, np.inf, 1, 0.5, 10.0, np.inf, 1, 0.5, 10.0]
 
     try:
         popt, _ = curve_fit(
             double_super_gaussian_model,
-            phase, mag,
+            phase,
+            mag,
             p0=p0,
             bounds=(lower, upper),
             maxfev=maxfev,

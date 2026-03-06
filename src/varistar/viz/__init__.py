@@ -11,6 +11,7 @@ Apply the science theme globally::
     from varistar.viz.style import apply_science_style
     apply_science_style()
 """
+
 from varistar.viz.style import (
     apply_science_style,
     apply_poster_style,
@@ -21,8 +22,14 @@ from varistar.viz.style import (
     add_status_dots,
     fap_lines,
 )
+
 __all__ = [
-    "apply_science_style", "apply_poster_style", "reset_style",
+    "apply_science_style",
+    "apply_poster_style",
+    "reset_style",
     "VARISTAR_COLORS",
-    "science_ticks", "add_status_badge", "add_status_dots", "fap_lines",
+    "science_ticks",
+    "add_status_badge",
+    "add_status_dots",
+    "fap_lines",
 ]

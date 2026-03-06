@@ -23,6 +23,7 @@ from varistar.models.gaussian import fit_double_super_gaussian
 # Core EB scorer
 # ---------------------------------------------------------------------------
 
+
 def score_eb(
     lc,
     period: float | None = None,
@@ -73,8 +74,8 @@ def score_eb(
     # Extract data
     mag_col = mag_col or lc.timeseries.mag_col
     ts = lc.timeseries
-    t  = ts.timeseries_df[ts.time_col].to_numpy()
-    y  = ts.timeseries_df[mag_col].to_numpy()
+    t = ts.timeseries_df[ts.time_col].to_numpy()
+    y = ts.timeseries_df[mag_col].to_numpy()
     phase = ((t - t.min()) / period) % 1.0
 
     # --- A. Fourier fit and MEA (4 harmonics) ---
@@ -88,11 +89,11 @@ def score_eb(
 
     # --- B. Density-in-dip check ---
     std_resid = float(np.std(residuals))
-    y_pred    = fourier_series(phase, *popt)
+    y_pred = fourier_series(phase, *popt)
 
     # Define the "dip": model values above mean + 1σ (deep eclipse region)
     threshold = float(np.mean(y_pred) + np.std(y_pred))
-    in_dip    = y_pred > threshold
+    in_dip = y_pred > threshold
     if not np.any(in_dip):
         return False, mea, popt
 
@@ -101,10 +102,10 @@ def score_eb(
         return False, mea, popt
 
     # Well-fitted = within ±1σ of the Fourier residuals
-    well_fitted     = np.abs(residuals) < std_resid
+    well_fitted = np.abs(residuals) < std_resid
     in_dip_and_well = in_dip & well_fitted
 
-    density_dip    = float(np.sum(in_dip_and_well)) / dip_width
+    density_dip = float(np.sum(in_dip_and_well)) / dip_width
     density_global = float(np.sum(well_fitted))
 
     if density_dip <= density_global + std_resid:
@@ -120,6 +121,7 @@ def score_eb(
 # ---------------------------------------------------------------------------
 # Morphology classification
 # ---------------------------------------------------------------------------
+
 
 def classify_eb_type(popt: np.ndarray) -> str:
     """
@@ -203,7 +205,7 @@ def detect_secondary_eclipse(
     found = dip_depth > threshold
 
     return {
-        "found":  found,
+        "found": found,
         "center": float(sub_phase[dip_idx]) if found else None,
-        "depth":  dip_depth if found else 0.0,
+        "depth": dip_depth if found else 0.0,
     }

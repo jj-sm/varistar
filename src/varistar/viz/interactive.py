@@ -24,7 +24,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    # Only imported for type hints — avoids hard dependency at import time
+    import plotly.graph_objects
     from varistar.timeseries import TimeSeries
     from varistar.lightcurve import LightCurve
     from varistar.groups import TestGroup

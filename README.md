@@ -58,7 +58,6 @@ This project is licensed under the **GNU General Public License v3 (GPLv3)**. Th
 
 ## Contributing
 
-Contributions make the scientific community stronger! 
 1. Check out the [Contributing Guidelines](CONTRIBUTING.md).
 2. Adhere to the [Code of Conduct](CODE_OF_CONDUCT.md).
 3. Open a [Feature Request](https://github.com/jj-sm/varistar/issues) for new ideas.

@@ -23,6 +23,9 @@ from varistar.viz.style import (
     fap_lines,
 )
 
+from varistar.viz.plot_format import format_ra, format_dec
+from varistar.viz.fits_tools import clean_channel, convex_hull
+
 __all__ = [
     "apply_science_style",
     "apply_poster_style",
@@ -32,4 +35,8 @@ __all__ = [
     "add_status_badge",
     "add_status_dots",
     "fap_lines",
+    "format_ra",
+    "format_dec",
+    "clean_channel",
+    "convex_hull"
 ]

@@ -24,7 +24,9 @@ check: lint test
 # --- Release ------------------------------------------------------------
 # Usage: make release VERSION=0.1.12
 #
-# Runs lint+tests locally, bumps the version in pyproject.toml and
+# Requires CHANGELOG.md to already contain a "## v<VERSION>" entry,
+# committed on main, before anything else runs. Then runs lint+tests
+# locally, bumps the version in pyproject.toml and
 # src/varistar/__init__.py, commits, pushes to main, tags, pushes the tag
 # (which triggers .github/workflows/publish.yml to test + publish to PyPI),
 # waits for that workflow to finish, and only then creates the GitHub
@@ -40,6 +42,9 @@ endif
 	@[ "$$(git rev-parse --abbrev-ref HEAD)" = "main" ] || (echo "Not on main branch." && exit 1)
 	@git fetch origin main --quiet
 	@[ "$$(git rev-parse HEAD)" = "$$(git rev-parse origin/main)" ] || (echo "Local main is not up to date with origin/main. Pull first." && exit 1)
+
+	@echo "==> Checking CHANGELOG.md has an entry for v$(VERSION)"
+	@grep -q "^## v$(VERSION)" CHANGELOG.md || (echo "CHANGELOG.md has no '## v$(VERSION)' entry. Add and commit one before releasing." && exit 1)
 
 	@echo "==> Running lint + tests locally"
 	$(MAKE) check

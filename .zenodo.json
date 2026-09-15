@@ -1,7 +1,7 @@
 {
   "title": "varistar Python Package",
   "upload_type": "software",
-  "version": "v0.1.12",
+  "version": "v0.1.14",
   "description": "varistar is a Python package that helps users manage and interact with variable-star data. It provides tools to visualize, clean, and prepare time-series data into light curves, as well as features for preparing data for machine-learning models for automated stellar classification.",
   "creators": [
     {
@@ -29,10 +29,10 @@
     {
       "identifier": "https://docs.jjsm.science/varistar",
       "relation": "isDocumentedBy",
-      "resource_type": "software-documentation"
+      "resource_type": "publication-softwaredocumentation"
     },
     {
-      "identifier": "https://github.com/jj-sm/varistar/tree/v0.1.12",
+      "identifier": "https://github.com/jj-sm/varistar/tree/v0.1.14",
       "relation": "isSupplementTo",
       "resource_type": "software"
     }

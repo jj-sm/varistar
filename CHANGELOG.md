@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.14 - 2026-09-15
+
+- Fixed `.zenodo.json` using an invalid `resource_type` value (`software-documentation`) that caused Zenodo archiving to fail; corrected to the valid `publication-softwaredocumentation`.
+
 ## v0.1.13 - 2026-09-15
 
 - Updated zenodo metadata

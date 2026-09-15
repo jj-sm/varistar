@@ -1,7 +1,4 @@
-"""
-varistar.catalog.generic
-=========================
-Survey-agnostic loader for any delimited photometry file (CSV, TSV, whitespace).
+"""Survey-agnostic loader for any delimited photometry file (CSV, TSV, whitespace).
 
 Use this when your data does not come from a supported survey adapter
 (OGLE, ASAS-SN, TESS) or when you want full control over column mapping.
@@ -33,8 +30,7 @@ def load_csv(
     quality_col: str | None = None,
     quality_values: list | None = None,
 ) -> pl.DataFrame:
-    """
-    Load a delimited photometry file into a Polars DataFrame.
+    r"""Load a delimited photometry file into a Polars DataFrame.
 
     The loader auto-detects the delimiter unless *sep* is specified.
     Blank lines and comment lines are always skipped.
@@ -188,9 +184,7 @@ def from_arrays(
     err: "np.ndarray",
     col_names: list[str] | None = None,
 ) -> pl.DataFrame:
-    """
-    Wrap three numpy arrays into a Polars DataFrame suitable for
-    ``TimeSeries.load_data_from_df()``.
+    """Wrap three numpy arrays into a Polars DataFrame suitable for ``TimeSeries.load_data_from_df()``.
 
     Parameters
     ----------

@@ -1,7 +1,4 @@
-"""
-varistar.viz
-============
-Plotting engine for varistar.
+"""Plotting engine for varistar.
 
 Static plots (matplotlib) are in ``varistar.viz.style``.
 Interactive plots (plotly) are in ``varistar.viz.interactive``.

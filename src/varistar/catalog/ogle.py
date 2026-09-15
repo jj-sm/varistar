@@ -1,7 +1,4 @@
-"""
-varistar.catalog.ogle
-=====================
-Loaders for OGLE-II / III / IV photometry files.
+"""Loaders for OGLE-II / III / IV photometry files.
 
 OGLE ``.dat`` files are whitespace-delimited plain text with three columns:
 

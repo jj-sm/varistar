@@ -1,7 +1,4 @@
-"""
-varistar.classify.eb_detector
-==============================
-Eclipsing Binary (EB) detection and morphology classification.
+"""Eclipsing Binary (EB) detection and morphology classification.
 
 The primary entry point is ``score_eb()``, which combines a Fourier fit with
 a density-in-dip heuristic to flag light curves that look like eclipsing

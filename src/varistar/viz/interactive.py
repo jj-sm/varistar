@@ -1,7 +1,4 @@
-"""
-varistar.viz.interactive
-========================
-Optional interactive plots powered by Plotly.
+"""Optional interactive plots powered by Plotly.
 
 All functions in this module require ``plotly`` to be installed::
 
@@ -139,18 +136,27 @@ def plot_phased(
     height: int = 450,
     width: int = 900,
 ) -> "plotly.graph_objects.Figure":
-    """
-    Interactive phase-folded light curve with optional Fourier fit overlay.
+    """Interactive phase-folded light curve with optional Fourier fit overlay.
 
     Parameters
     ----------
     lc : LightCurve
     period : float | None
         Override period.
+    mag_col : str, optional
+        Magnitude column to plot. Defaults to `lc.timeseries.mag_col`.
+    err_col : str, optional
+        Error column to plot. Defaults to `lc.timeseries.err_col`.
+    band_name : str
+        Photometric band label used in the y-axis title.
     show_fit : bool
         Overlay a Fourier fit line.
     n_harmonics : int
         Number of harmonics for the Fourier fit.
+    title : str, optional
+        Plot title. Defaults to the timeseries ID and best period.
+    height, width : int
+        Figure size in pixels.
 
     Returns
     -------
@@ -246,8 +252,7 @@ def plot_periodogram(
     height: int = 400,
     width: int = 900,
 ) -> "plotly.graph_objects.Figure":
-    """
-    Interactive Lomb-Scargle power spectrum with clickable peak annotation.
+    """Interactive Lomb-Scargle power spectrum with clickable peak annotation.
 
     Clicking a point shows the period / frequency and power in the hover label.
     Top-5 period candidates are annotated automatically.
@@ -261,6 +266,10 @@ def plot_periodogram(
         Use log scale on the period axis (ignored when use_frequency=True).
     fap_levels : dict[float, float] | None
         FAP reference lines from ``varistar.period.lomb_scargle.false_alarm_levels()``.
+    title : str, optional
+        Plot title. Defaults to the timeseries ID.
+    height, width : int
+        Figure size in pixels.
 
     Returns
     -------
@@ -355,8 +364,7 @@ def mosaic_phased(
     width: int = 1100,
     title: str | None = None,
 ) -> "plotly.graph_objects.Figure":
-    """
-    Build a Plotly subplot grid of phase-folded light curves.
+    """Build a Plotly subplot grid of phase-folded light curves.
 
     Intended as a browser-renderable equivalent of ``TestGroup.plot_mosaic``.
     Each panel is a mini phase-folded scatter with no fit line (for speed).
@@ -370,6 +378,12 @@ def mosaic_phased(
         Maximum number of panels.
     n_cols : int
         Number of columns in the grid.
+    height_per_row : int
+        Panel height in pixels; total figure height scales with row count.
+    width : int
+        Figure width in pixels.
+    title : str, optional
+        Overall figure title.
 
     Returns
     -------

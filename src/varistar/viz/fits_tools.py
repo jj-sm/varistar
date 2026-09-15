@@ -1,20 +1,26 @@
+"""FITS image normalization and convex-hull helpers for the FITS viewer."""
+
 import numpy as np
 from astropy.visualization import ZScaleInterval
 
-# Clean fits
+
 def clean_channel(img: np.ndarray) -> np.ndarray:
-    """
-    Cleans a FITS image by applying a zscale normalization. 
-    This function takes a 2D array representing the image data, 
-    identifies the finite values, and applies a zscale normalization 
-    to scale the pixel values to the range [0, 1]. 
-    The function handles cases where there are no finite values 
-    or where the scale is not valid, ensuring that the output is
-    a properly normalized image suitable for visualization.
-    Parameters:
-        img (np.ndarray): A 2D array representing the FITS image data.
-    Returns:
-        np.ndarray: A 2D array of the same shape as the input.
+    """Normalize a FITS image channel to [0, 1] using zscale limits.
+
+    Non-finite pixels are excluded when computing the zscale limits
+    and are mapped to 0 in the output.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        2D array of FITS image data.
+
+    Returns
+    -------
+    np.ndarray
+        2D array of the same shape as `img`, normalized to [0, 1].
+        Returns an all-zero array if `img` has no finite values or
+        the zscale limits collapse to a non-positive range.
     """
     img = np.asarray(img, dtype=float)
     finite = np.isfinite(img)
@@ -33,11 +39,21 @@ def clean_channel(img: np.ndarray) -> np.ndarray:
     return np.clip(scaled, 0.0, 1.0)
 
 def convex_hull(points: np.ndarray) -> np.ndarray:
-    """
-    Computes the convex hull of a set of 2D points using the monotone
-    chain algorithm.
-    """
+    """Compute the convex hull of a set of 2D points.
 
+    Uses Andrew's monotone chain algorithm, O(n log n).
+
+    Parameters
+    ----------
+    points : np.ndarray
+        Array of shape (n, 2) with 2D point coordinates.
+
+    Returns
+    -------
+    np.ndarray
+        Array of shape (m, 2) with the hull vertices in
+        counter-clockwise order, starting from the lowest point.
+    """
     if points.shape[0] <= 1:
         return points
     pts = points[np.lexsort((points[:, 1], points[:, 0]))]

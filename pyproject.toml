@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "varistar"
-version = "0.1.10"
+version = "0.1.11"
 description = "varistar is a Python package helps users manage and interact with possible variable star's data."
 authors = [
     { name="Juan José Sánchez", email="pip@jjsm.science" }
@@ -53,3 +53,12 @@ dev = [
 "pytest>=7.0",
 "ruff>=0.3.0",
 ]
+
+[tool.ruff.lint]
+extend-select = ["D"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D"]

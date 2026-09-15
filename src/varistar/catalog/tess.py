@@ -1,7 +1,4 @@
-"""
-varistar.catalog.tess
-=====================
-Loader for TESS photometry delivered via `lightkurve` or as FITS files.
+"""Loader for TESS photometry delivered via `lightkurve` or as FITS files.
 
 Two loading paths are supported:
 
@@ -180,10 +177,14 @@ def load_from_tic(
         TESS sector number.  ``None`` → use the first available sector.
     flux_column : str
         lightkurve flux type: ``'pdcsap_flux'`` or ``'sap_flux'``.
+    time_col, mag_col, err_col : str
+        Output column names for the returned DataFrame.
     as_magnitude : bool
         Convert flux to TESS magnitude (see module docstring).
     quality_bitmask : str | int
         Passed directly to ``lightkurve.search_lightcurve``.
+    author : str
+        Pipeline author to query (passed to ``lightkurve.search_lightcurve``).
 
     Returns
     -------

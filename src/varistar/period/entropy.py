@@ -1,7 +1,4 @@
-"""
-varistar.period.entropy
-=======================
-Information-theoretic and Analysis-of-Variance period-finding methods.
+"""Information-theoretic and Analysis-of-Variance period-finding methods.
 
 Two algorithms are implemented:
 
@@ -173,6 +170,8 @@ def compute_aov(
         Number of phase bins.
     n_top : int
         Number of best candidate periods to return.
+    verbose : bool
+        Print progress and result summary.
 
     Returns
     -------

@@ -1,7 +1,4 @@
-"""
-varistar.period.vs_period
-=========================
-High-level period selection utilities for variable star light curves.
+"""High-level period selection utilities for variable star light curves.
 
 These functions are designed to be called by ``LightCurve`` methods but are
 also available as standalone functions, making them unit-testable and reusable

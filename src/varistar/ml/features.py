@@ -1,7 +1,4 @@
-"""
-varistar.ml.features
-====================
-Statistical and astrophysical feature extraction for variable star light curves.
+"""Statistical and astrophysical feature extraction for variable star light curves.
 
 Feature index reference
 -----------------------
@@ -50,6 +47,7 @@ def f1_mad(y: np.ndarray) -> float:
 def f2_octile_skewness(y: np.ndarray) -> float:
     """
     Octile Skewness (OS).
+
     Robust skewness estimate using the 12.5th, 50th, and 87.5th percentiles.
     """
     q = np.percentile(y, [12.5, 50.0, 87.5])
@@ -59,6 +57,7 @@ def f2_octile_skewness(y: np.ndarray) -> float:
 def f3_low(y: np.ndarray) -> float:
     """
     Left Octile ratio (LOW).
+
     Measures asymmetry on the faint side of the distribution.
     """
     q = np.percentile(y, [12.5, 25.0, 50.0])
@@ -68,6 +67,7 @@ def f3_low(y: np.ndarray) -> float:
 def f4_row(y: np.ndarray) -> float:
     """
     Right Octile ratio (ROW).
+
     Measures asymmetry on the bright side of the distribution.
     """
     q = np.percentile(y, [50.0, 75.0, 87.5])
@@ -76,7 +76,8 @@ def f4_row(y: np.ndarray) -> float:
 
 def f5_mav(y: np.ndarray) -> float:
     """
-    Modified Abbe Value (MAV).
+    Compute the Modified Abbe Value (MAV).
+
     Abbe value computed with Huber-robust loss to suppress outlier influence.
     k=1.345 corresponds to 95 % asymptotic efficiency under Gaussian noise.
     (Pérez et.al, 2017)
@@ -92,13 +93,14 @@ def f5_mav(y: np.ndarray) -> float:
 
 
 def f6_skew(y: np.ndarray) -> float:
-    """Standard (Fisher–Pearson) skewness."""
+    """Compute the standard (Fisher-Pearson) skewness."""
     return float(skew(y))
 
 
 def f7_stetson_j(y: np.ndarray) -> float:
     """
     Stetson J index.
+
     Detects correlated variability between consecutive pairs of observations.
     Normalised by (N-1) to be comparable across different dataset sizes.
     """
@@ -111,6 +113,7 @@ def f7_stetson_j(y: np.ndarray) -> float:
 def f8_flux_perc_ratio(y: np.ndarray) -> float:
     """
     Flux Percentile Ratio.
+
     Ratio of the 5–95th percentile range to the 40–60th percentile range.
     A large value indicates a peaked, outlier-rich distribution.
     """
@@ -121,6 +124,7 @@ def f8_flux_perc_ratio(y: np.ndarray) -> float:
 def f9_log_freq(f1: float) -> float:
     """
     log10 of the dominant frequency (cycles per day).
+
     Returns -5 as a sentinel when no valid frequency is available.
     """
     return float(np.log10(f1)) if f1 > 0.0 else -5.0
@@ -129,6 +133,7 @@ def f9_log_freq(f1: float) -> float:
 def f10_log_amp(y: np.ndarray) -> float:
     """
     log10 of the peak-to-peak magnitude amplitude.
+
     Returns -5 as a sentinel for flat light curves.
     """
     amp = float(np.max(y) - np.min(y))
@@ -140,11 +145,20 @@ def f11_12_13_fourier(
     y: np.ndarray,
     p1: float | None,
 ) -> tuple[float, float, float]:
-    """
-    Fourier decomposition features: R21, cos(φ21), sin(φ21).
+    """Fourier decomposition features: R21, cos(φ21), sin(φ21).
 
     Fits the two-harmonic model:
         m(φ) = A0 + A1·sin(2πφ + φ1) + A2·sin(4πφ + φ2)
+
+    Parameters
+    ----------
+    t : np.ndarray
+        Observation times.
+    y : np.ndarray
+        Magnitude values.
+    p1 : float | None
+        Dominant period used to phase-fold `t`. Returns all zeros if
+        `p1` is None or non-positive.
 
     Returns
     -------
@@ -180,6 +194,7 @@ def f11_12_13_fourier(
 def f14_freq_ratio(periods: list[float], f1: float) -> float:
     """
     Ratio of the second-strongest frequency to the dominant frequency.
+
     Returns 0 when fewer than two candidate periods are available.
     """
     if f1 <= 0.0 or len(periods) < 2:
@@ -190,6 +205,7 @@ def f14_freq_ratio(periods: list[float], f1: float) -> float:
 def f15_von_neumann(y: np.ndarray) -> float:
     """
     Von Neumann η index.
+
     Ratio of mean-squared successive differences to the sample variance.
     Low values indicate correlated, smooth variability.
     """
@@ -204,10 +220,7 @@ def f16_kurtosis(y: np.ndarray) -> float:
 
 
 def f17_beyond1std(y: np.ndarray) -> float:
-    """
-    Fraction of data points that lie more than one standard deviation
-    from the mean magnitude.
-    """
+    """Fraction of data points that lie more than one standard deviation from the mean magnitude."""
     std = np.std(y)
     mean = np.mean(y)
     return float(np.sum(np.abs(y - mean) > std) / len(y))
@@ -255,9 +268,7 @@ def feature_name(index: int) -> str:
 
 
 class FeatureExtractor:
-    """
-    Stateless extractor that converts a TimeSeries / LightCurve pair into a
-    flat feature dictionary suitable for DataFrame construction.
+    """Convert a TimeSeries / LightCurve pair into a flat feature dictionary.
 
     Usage
     -----

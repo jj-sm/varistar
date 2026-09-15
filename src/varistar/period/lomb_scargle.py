@@ -1,7 +1,4 @@
-"""
-varistar.period.lomb_scargle
-============================
-Lomb-Scargle periodogram and Spectrum Resampling period-finding functions.
+"""Lomb-Scargle periodogram and Spectrum Resampling period-finding functions.
 
 Both functions are pure numpy/astropy operations: they accept raw arrays and
 return raw arrays, with no dependency on TimeSeries or LightCurve objects.
@@ -91,14 +88,18 @@ def false_alarm_levels(
     min_freq: float = 0.001,
     max_freq: float = 10.0,
 ) -> dict[float, float]:
-    """
-    Return the Lomb-Scargle power thresholds at given False Alarm Probability
-    levels using astropy's bootstrap FAP method.
+    """Return the Lomb-Scargle power thresholds at given False Alarm Probability levels.
+
+    Uses astropy's bootstrap FAP method.
 
     Parameters
     ----------
+    t, y, dy : np.ndarray
+        Time, magnitude, and uncertainty arrays.
     fap_levels : tuple[float, ...]
         FAP levels to evaluate (e.g. 0.1 = 10 %, 0.01 = 1 %).
+    min_freq, max_freq : float
+        Frequency search bounds in cycles/day.
 
     Returns
     -------
@@ -152,10 +153,16 @@ def compute_sr(
     ----------
     t, y, dy : np.ndarray
         Time, magnitude, and uncertainty arrays.
+    min_freq, max_freq : float
+        Frequency search bounds in cycles/day.
+    samples_per_peak : int
+        Oversampling factor for the frequency grid.
     smoothing_sigma : float
         Gaussian kernel σ (in frequency-grid steps) for spectrum smoothing.
     n_bootstrap : int
         Number of bootstrap resamples.
+    verbose : bool
+        Print progress and result summary.
 
     Returns
     -------

@@ -1,8 +1,4 @@
-"""
-varistar.models.gaussian
-========================
-Gaussian and Super-Gaussian model functions for eclipsing binary light curve
-fitting.
+"""Gaussian and Super-Gaussian model functions for eclipsing binary light curve fitting.
 
 All models handle circular phase wrapping internally so they work correctly
 near phase = 0 / 1 boundaries without any pre-processing by the caller.
@@ -43,11 +39,28 @@ def gaussian_model(
     center: float,
     width: float,
 ) -> np.ndarray:
-    """
-    Inverted Gaussian dip for a single-eclipse light curve.
+    """Inverted Gaussian dip for a single-eclipse light curve.
 
     m(x) = baseline - amp · exp(-0.5 · (Δ/width)²)
     where Δ is the circular phase distance to *center*.
+
+    Parameters
+    ----------
+    x : np.ndarray
+        Phase values in [0, 1].
+    baseline : float
+        Out-of-eclipse magnitude level.
+    amp : float
+        Eclipse depth.
+    center : float
+        Phase of eclipse minimum.
+    width : float
+        Gaussian width (standard deviation) in phase units.
+
+    Returns
+    -------
+    np.ndarray
+        Model magnitude at each phase in `x`.
     """
     delta = _phase_dist(x, center)
     return baseline - amp * np.exp(-0.5 * (delta / width) ** 2)
@@ -61,13 +74,32 @@ def super_gaussian_model(
     width: float,
     shape: float,
 ) -> np.ndarray:
-    """
-    Generalised Normal (Super-Gaussian) dip for a single eclipse.
+    """Generalised Normal (Super-Gaussian) dip for a single eclipse.
 
     m(x) = baseline - amp · exp(-0.5 · |Δ/width|^shape)
 
     A shape parameter != 2 allows fitting boxy (detached) or pointed (contact)
     eclipse profiles more accurately than a standard Gaussian.
+
+    Parameters
+    ----------
+    x : np.ndarray
+        Phase values in [0, 1].
+    baseline : float
+        Out-of-eclipse magnitude level.
+    amp : float
+        Eclipse depth.
+    center : float
+        Phase of eclipse minimum.
+    width : float
+        Characteristic width in phase units.
+    shape : float
+        Shape exponent; see module docstring for the boxy/pointed guide.
+
+    Returns
+    -------
+    np.ndarray
+        Model magnitude at each phase in `x`.
     """
     delta = _phase_dist(x, center)
     safe_width = np.maximum(width, 1e-4)
@@ -89,7 +121,24 @@ def double_gaussian_model(
     center2: float,
     width2: float,
 ) -> np.ndarray:
-    """Double inverted Gaussian for primary + secondary eclipse."""
+    """Double inverted Gaussian for primary + secondary eclipse.
+
+    Parameters
+    ----------
+    x : np.ndarray
+        Phase values in [0, 1].
+    baseline : float
+        Out-of-eclipse magnitude level.
+    amp1, center1, width1 : float
+        Depth, phase, and width of the primary eclipse.
+    amp2, center2, width2 : float
+        Depth, phase, and width of the secondary eclipse.
+
+    Returns
+    -------
+    np.ndarray
+        Model magnitude at each phase in `x`.
+    """
     g1 = amp1 * np.exp(-0.5 * (_phase_dist(x, center1) / width1) ** 2)
     g2 = amp2 * np.exp(-0.5 * (_phase_dist(x, center2) / width2) ** 2)
     return baseline - g1 - g2
@@ -107,7 +156,24 @@ def double_super_gaussian_model(
     wid2: float,
     shape2: float,
 ) -> np.ndarray:
-    """Double Super-Gaussian for primary + secondary eclipse."""
+    """Double Super-Gaussian for primary + secondary eclipse.
+
+    Parameters
+    ----------
+    x : np.ndarray
+        Phase values in [0, 1].
+    baseline : float
+        Out-of-eclipse magnitude level.
+    amp1, cent1, wid1, shape1 : float
+        Depth, phase, width, and shape exponent of the primary eclipse.
+    amp2, cent2, wid2, shape2 : float
+        Depth, phase, width, and shape exponent of the secondary eclipse.
+
+    Returns
+    -------
+    np.ndarray
+        Model magnitude at each phase in `x`.
+    """
     d1 = _phase_dist(x, cent1)
     d2 = _phase_dist(x, cent2)
     g1 = amp1 * np.exp(-0.5 * np.abs(d1 / np.maximum(wid1, 1e-4)) ** shape1)

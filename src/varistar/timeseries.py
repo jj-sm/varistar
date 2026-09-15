@@ -1,7 +1,4 @@
-"""
-varistar.timeseries
-===================
-Core TimeSeries class: data I/O, cleaning, statistics, and basic visualisation.
+"""Core TimeSeries class: data I/O, cleaning, statistics, and basic visualisation.
 
 This module is survey-agnostic.  Data loading from specific survey formats
 (OGLE, ASAS-SN, TESS) is handled by ``varistar.catalog``.
@@ -58,20 +55,25 @@ class TimeSeries:
 
     @property
     def time_col(self) -> str:
+        """Name of the time column."""
         return self.colnames[0]
 
     @property
     def mag_col(self) -> str:
+        """Name of the magnitude column."""
         return self.colnames[1]
 
     @property
     def err_col(self) -> str:
+        """Name of the photometric error column."""
         return self.colnames[2]
 
     def __len__(self) -> int:
+        """Return the number of observations in `timeseries_df`."""
         return len(self.timeseries_df)
 
     def __repr__(self) -> str:
+        """Return a debug-friendly summary of the series."""
         return (
             f"TimeSeries(id='{self.timeseries_id}', "
             f"n={len(self)}, "
@@ -92,8 +94,8 @@ class TimeSeries:
     # ------------------------------------------------------------------
 
     def reset(self) -> None:
-        """
-        Restore ``timeseries_df`` to its original state (before any cleaning).
+        """Restore ``timeseries_df`` to its original state (before any cleaning).
+
         No-op if no original snapshot has been saved.
         """
         if self.timeseries_df_orig is None or self.timeseries_df_orig.empty:
@@ -253,13 +255,13 @@ class TimeSeries:
         mask = (temp["_frac_err"] < q1 - k * iqr) | (temp["_frac_err"] > q3 + k * iqr)
         return mask
 
-    # Old name alias kept for backward compatibility
     def stats_outlier_clipping(
         self,
         column: str = "mag_i",
         error_column: str = "m_error",
         k: float = 1.5,
     ) -> pl.Series:
+        """Call `mask_iqr_outliers`. Deprecated; kept for backwards compatibility."""
         return self.mask_iqr_outliers(column=column, error_column=error_column, k=k)
 
     def mask_sigma_clip(
@@ -268,8 +270,7 @@ class TimeSeries:
         n_sigma: float,
         max_iter: int = 5,
     ) -> pl.DataFrame:
-        """
-        Iterative sigma-clipping on a chosen column.
+        """Sigma-clip a chosen column iteratively.
 
         Returns the clipped DataFrame (does **not** modify in-place).
         Useful for getting a clean copy without permanently altering the object.
@@ -315,9 +316,7 @@ class TimeSeries:
     # ------------------------------------------------------------------
 
     def stats(self) -> dict | None:
-        """
-        Return a nested dict of descriptive statistics for the magnitude and
-        error columns.
+        """Return a nested dict of descriptive statistics for the magnitude and error columns.
 
         Returns
         -------
@@ -509,6 +508,7 @@ class TimeSeries:
         fig_size: tuple = (8, 4),
         save_path: str | None = None,
         ax: plt.Axes | None = None,
+        title: str | None = None,
         **kwargs,
     ) -> None:
         """
@@ -526,6 +526,14 @@ class TimeSeries:
             Shift the time axis so the first observation is at t = 0.
         ax : plt.Axes | None
             External axis for mosaic embedding.  A new figure is created if None.
+        fig_size : tuple
+            Figure size in inches (width, height) if a new figure is created.
+        save_path : str | None
+            File path to save the figure.  If None, the figure is displayed interactively.
+        title : str | None
+            Optional title for the plot.  Defaults to ``self.timeseries_id``.
+        **kwargs : dict
+            Additional keyword arguments passed to ``ax.errorbar()``.
         """
         plot_df = df if df is not None else self.timeseries_df
         mag_col = mag_col or self.mag_col
@@ -567,7 +575,11 @@ class TimeSeries:
 
         tf = 14 if own else 10
         lf = 12 if own else 9
-        ax.set_title(self.timeseries_id, fontsize=tf)
+
+        if title is not None:
+            ax.set_title(title, fontsize=tf)
+        else:
+            ax.set_title(self.timeseries_id, fontsize=tf)
         ax.set_ylabel(f"{band_name} mag", fontsize=lf)
         ax.set_xlabel(
             "Time (Days)" if set_time_to_zero else self.time_scale, fontsize=lf
@@ -598,6 +610,12 @@ class TimeSeries:
             One or more boolean masks (True = discarded).
         labels : list[str] | None
             Legend labels for each mask.
+        fig_size : tuple
+            Figure size in inches, used only when `ax` is None.
+        save_path : str, optional
+            If given, save the figure to this path.
+        ax : plt.Axes, optional
+            Existing axes to draw on; a new figure is created if None.
         """
         if df_original.is_empty():
             if ax is not None:
@@ -682,8 +700,20 @@ class TimeSeries:
         save_path: str | None = None,
         ax: plt.Axes | None = None,
     ) -> None:
-        """
-        Histogram of the magnitude distribution with a fitted normal curve overlay.
+        """Plot a histogram of the magnitude distribution with a fitted normal curve overlay.
+
+        Parameters
+        ----------
+        column : str, optional
+            Column to plot. Defaults to `mag_col`.
+        band_name : str
+            Photometric band label used in the x-axis title.
+        fig_size : tuple
+            Figure size in inches, used only when `ax` is None.
+        save_path : str, optional
+            If given, save the figure to this path.
+        ax : plt.Axes, optional
+            Existing axes to draw on; a new figure is created if None.
         """
         if self.timeseries_df.is_empty():
             if ax is not None:

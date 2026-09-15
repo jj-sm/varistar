@@ -1,7 +1,4 @@
-"""
-varistar.period.pdm
-===================
-Phase Dispersion Minimization (PDM) period-finding functions.
+"""Phase Dispersion Minimization (PDM) period-finding functions.
 
 Two variants are provided:
 
@@ -121,12 +118,16 @@ def compute_pdm2(
     ----------
     t, y : np.ndarray
         Time and magnitude arrays.
+    min_freq, max_freq : float
+        Frequency search bounds in cycles/day.
     samples_per_peak : int
         Frequency grid step = 1 / (baseline · samples_per_peak).
     phase_bins : int
         Number of phase bins for the piecewise template.
     n_top : int
         Number of best candidate periods to return.
+    verbose : bool
+        Print progress and result summary.
 
     Returns
     -------

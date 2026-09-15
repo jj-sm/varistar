@@ -1,7 +1,4 @@
-"""
-varistar
-========
-Variable star photometric analysis toolkit.
+"""Variable star photometric analysis toolkit.
 
 Quick start
 -----------
@@ -13,7 +10,7 @@ Quick start
 >>> lc.plot_best()
 """
 
-__version__ = "0.1.10"
+__version__ = "0.1.11"
 
 from varistar.timeseries import TimeSeries
 from varistar.lightcurve import LightCurve

@@ -1,8 +1,6 @@
-"""
-varistar.ml.pipeline
-====================
-CLI-friendly pipeline that discovers all `.dat` files in a directory,
-runs the full TimeSeries → LightCurve → FeatureExtractor chain in parallel,
+"""CLI-friendly pipeline that discovers all `.dat` files in a directory.
+
+Runs the full TimeSeries → LightCurve → FeatureExtractor chain in parallel,
 and saves a timestamped CSV catalogue.
 
 Usage (script)

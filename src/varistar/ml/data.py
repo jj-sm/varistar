@@ -1,7 +1,4 @@
-"""
-varistar.ml.data
-================
-Dataset container for variable star objects.
+"""Dataset container for variable star objects.
 
 Handles batch feature extraction (parallel), unsupervised clustering,
 and dimensionality-reduction visualisation (PCA / t-SNE).
@@ -74,9 +71,11 @@ class Dataset:
         self.df_features = None
 
     def __len__(self) -> int:
+        """Return the number of registered objects."""
         return len(self.objects)
 
     def __repr__(self) -> str:
+        """Return a debug-friendly summary of the dataset state."""
         n_feat = len(self.df_features.columns) if self.df_features is not None else 0
         return (
             f"Dataset(objects={len(self.objects)}, "

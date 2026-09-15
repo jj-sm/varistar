@@ -1,7 +1,4 @@
-"""
-varistar.models.harmonic
-========================
-Fourier (harmonic) series model functions for light curve fitting.
+"""Fourier (harmonic) series model functions for light curve fitting.
 
 All functions are pure numpy operations with no class dependencies,
 making them independently testable and importable anywhere.

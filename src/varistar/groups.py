@@ -1,7 +1,4 @@
-"""
-varistar.groups
-===============
-Batch processing container for collections of TimeSeries / LightCurve objects.
+"""Batch processing container for collections of TimeSeries / LightCurve objects.
 
 Objects are labelled as GOOD / BAD / ANY so that visual inspection and batch
 operations can treat different subsets differently.
@@ -53,9 +50,11 @@ class TestGroup:
     # ------------------------------------------------------------------
 
     def __len__(self) -> int:
+        """Return the total number of registered objects across all labels."""
         return len(self.good_ts) + len(self.bad_ts) + len(self.any_ts)
 
     def __repr__(self) -> str:
+        """Return a debug-friendly summary of group sizes."""
         return (
             f"TestGroup(name='{self.name}', "
             f"good={len(self.good_ts)}, "
@@ -201,8 +200,8 @@ class TestGroup:
                 obj_id = getattr(obj, "timeseries_id", repr(obj))
                 print(f"[apply] Error on '{obj_id}': {exc}")
 
-    # Old name alias
     def apply_fun(self, method: Callable, **kwargs) -> None:
+        """Call `apply`. Deprecated; kept for backwards compatibility."""
         self.apply(method, **kwargs)
 
     def reset_all(self) -> None:
@@ -210,8 +209,8 @@ class TestGroup:
         for obj, _ in self._all_objects():
             obj.reset()
 
-    # Old name alias
     def reset_data(self) -> None:
+        """Call `reset_all`. Deprecated; kept for backwards compatibility."""
         self.reset_all()
 
     def run_periodicity(self, method: str = "ls") -> None:
@@ -249,9 +248,7 @@ class TestGroup:
         condition: Callable,
         target: str = "any",
     ) -> "TestGroup":
-        """
-        Return a new ``TestGroup`` containing only objects that satisfy
-        ``condition(getattr(obj, attr))``.
+        """Return a new ``TestGroup`` containing only objects that satisfy ``condition(getattr(obj, attr))``.
 
         Parameters
         ----------
@@ -306,8 +303,7 @@ class TestGroup:
     to_dataframe = export_attributes
 
     def export_periods(self) -> pl.DataFrame:
-        """
-        Convenience wrapper: export only ``timeseries_id`` and period columns.
+        """Export only ``timeseries_id`` and period columns.
 
         Objects that have no ``periods`` attribute are skipped silently.
         """

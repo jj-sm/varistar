@@ -1,7 +1,4 @@
-"""
-varistar.classify.variability
-==============================
-Scalar variability indices computed from a raw magnitude array.
+"""Scalar variability indices computed from a raw magnitude array.
 
 These indices are survey-independent, require no period information, and
 are the standard first-pass features used to separate variable stars from

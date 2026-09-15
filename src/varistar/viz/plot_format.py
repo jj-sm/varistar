@@ -1,21 +1,44 @@
-"""
-Functions for formatting RA and DEC values for plotting on matplotlib axes. These functions convert RA and DEC values from degrees to a more human-readable format, suitable for astronomical plots. The RA is formatted in hours and minutes, while the DEC is formatted in degrees and arcminutes, with appropriate symbols and signs.
+"""Matplotlib axis formatters for RA/Dec tick labels.
+
+Both formatters accept a ``_position`` argument for compatibility with
+`matplotlib.ticker.FuncFormatter`; it is unused.
 """
 
 from astropy.coordinates import Angle
 import astropy.units as u
 
-# RA and DEC formatting functions for matplotlib axes. The _position argument is required by the FuncFormatter but is not used here.
+
 def format_ra(value: float, _position: int | None = None) -> str:
+    """Format a right ascension value for a matplotlib tick label.
+
+    Parameters
+    ----------
+    value : float
+        Right ascension in degrees.
+    _position : int, optional
+        Tick position, unused; accepted for `FuncFormatter` compatibility.
+
+    Returns
+    -------
+    str
+        RA formatted as hours and minutes, e.g. ``"20h 20m"``.
     """
-    Formats the RA value in degrees to a string format suitable for plotting on a matplotlib axis. The output is in the form of hours and minutes, with appropriate symbols for hours and minutes.
-    """
-    # Formats to: 20h 20'
-    return Angle(value * u.deg).to_string(unit=u.hourangle, sep=('$^\\text{h}$', '$^\\text{m}$'), precision=0, pad=True, fields=2) # type: ignore
+    return Angle(value * u.deg).to_string(unit=u.hourangle, sep=('$^\\text{h}$', '$^\\text{m}$'), precision=0, pad=True, fields=2)  # type: ignore
+
 
 def format_dec(value: float, _position: int | None = None) -> str:
+    """Format a declination value for a matplotlib tick label.
+
+    Parameters
+    ----------
+    value : float
+        Declination in degrees.
+    _position : int, optional
+        Tick position, unused; accepted for `FuncFormatter` compatibility.
+
+    Returns
+    -------
+    str
+        Dec formatted as signed degrees and arcminutes, e.g. ``"+19° 20m"``.
     """
-    Formats the DEC value in degrees to a string format suitable for plotting on a matplotlib axis. The output is in the form of degrees and arcminutes, with appropriate symbols for degrees and arcminutes, and includes a sign for positive and negative values.
-    """
-    # Formats to: +19° 20'
-    return Angle(value * u.deg).to_string(unit=u.deg, sep=('$^\\text{°}$', '$^\\text{m}$'), precision=0, pad=True, alwayssign=True, fields=2) # type: ignore
+    return Angle(value * u.deg).to_string(unit=u.deg, sep=('$^\\text{°}$', '$^\\text{m}$'), precision=0, pad=True, alwayssign=True, fields=2)  # type: ignore

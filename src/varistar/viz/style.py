@@ -1,7 +1,4 @@
-"""
-varistar.viz.style
-==================
-Shared matplotlib styling for all varistar plots.
+"""Shared matplotlib styling for all varistar plots.
 
 Two themes are provided:
 

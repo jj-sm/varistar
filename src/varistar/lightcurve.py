@@ -1,7 +1,4 @@
-"""
-varistar.lightcurve
-===================
-LightCurve class: period finding, phase folding, model fitting, and plotting.
+"""LightCurve class: period finding, phase folding, model fitting, and plotting.
 
 This class composes a ``TimeSeries`` object and extends it with period-analysis
 capabilities.  Heavy-lifting computations are delegated to the sub-modules
@@ -61,6 +58,7 @@ class LightCurve:
         self.sr_stats: dict = {}
 
     def __repr__(self) -> str:
+        """Return a debug-friendly summary of the best period and count."""
         p = f"{self.periods[0]:.5f} d" if self.periods else "—"
         return (
             f"LightCurve(id='{self.timeseries.timeseries_id}', "
@@ -78,11 +76,22 @@ class LightCurve:
         samples_per_peak: int = 10,
         n_top: int = 20,
     ) -> dict:
-        """
-        Run the Lomb-Scargle periodogram and store candidate periods.
+        """Run the Lomb-Scargle periodogram and store candidate periods.
 
-        Returns the raw power-spectrum dict (frequency, period, power,
-        periods, periods_map).
+        Parameters
+        ----------
+        min_freq, max_freq : float
+            Frequency search bounds in cycles/day.
+        samples_per_peak : int
+            Oversampling factor for the frequency grid.
+        n_top : int
+            Number of top-power candidate periods to keep.
+
+        Returns
+        -------
+        dict
+            Raw power-spectrum dict (``frequency``, ``period``, ``power``,
+            ``periods``, ``periods_map``); ``{}`` if the timeseries is empty.
         """
         if self.timeseries.timeseries_df.is_empty():
             return {}
@@ -102,7 +111,6 @@ class LightCurve:
         self.periods_map = result["periods_map"]
         return result
 
-    # Keep old name as alias
     def get_power_spectra(
         self,
         mag_col: str | None = None,
@@ -111,6 +119,27 @@ class LightCurve:
         max_freq: float = 10.0,
         samples_per_peak: int = 10,
     ) -> dict:
+        """Call `run_ls`. Deprecated; kept for backwards compatibility.
+
+        `mag_col` and `err_col` are accepted but unused. Prefer `run_ls`
+        in new code.
+
+        Parameters
+        ----------
+        mag_col : str, optional
+            Unused.
+        err_col : str, optional
+            Unused.
+        min_freq, max_freq : float
+            Frequency search bounds, passed through to `run_ls`.
+        samples_per_peak : int
+            Oversampling factor, passed through to `run_ls`.
+
+        Returns
+        -------
+        dict
+            See `run_ls`.
+        """
         return self.run_ls(
             min_freq=min_freq,
             max_freq=max_freq,
@@ -124,7 +153,22 @@ class LightCurve:
         n_freq: int = 20_000,
         n_bins: int = 10,
     ) -> float:
-        """Run Stellingwerf PDM; returns the best period."""
+        """Run Stellingwerf PDM and store candidate periods.
+
+        Parameters
+        ----------
+        min_freq, max_freq : float
+            Frequency search bounds in cycles/day.
+        n_freq : int
+            Number of frequency-grid points to evaluate.
+        n_bins : int
+            Number of phase bins used to compute the PDM statistic.
+
+        Returns
+        -------
+        float
+            The best (lowest-θ) period; 0.0 if the timeseries is empty.
+        """
         if self.timeseries.timeseries_df.is_empty():
             return 0.0
         t, y, _ = self._get_tyd()
@@ -145,7 +189,23 @@ class LightCurve:
         samples_per_peak: int = 10,
         phase_bins: int = 50,
     ) -> float:
-        """Run binless PDM2; returns the best period."""
+        """Run binless PDM2 and store candidate periods.
+
+        Parameters
+        ----------
+        min_freq, max_freq : float
+            Frequency search bounds in cycles/day.
+        samples_per_peak : int
+            Oversampling factor for the frequency grid.
+        phase_bins : int
+            Number of phase-interpolation points used to compute the
+            PDM2 statistic.
+
+        Returns
+        -------
+        float
+            The best (lowest-θ) period; 0.0 if the timeseries is empty.
+        """
         if self.timeseries.timeseries_df.is_empty():
             return 0.0
         t, y, _ = self._get_tyd()
@@ -172,7 +232,25 @@ class LightCurve:
         smoothing_sigma: float = 2.0,
         n_bootstrap: int = 1_000,
     ) -> float:
-        """Run Spectrum Resampling; returns the best period."""
+        """Run Spectrum Resampling and store the best period.
+
+        Parameters
+        ----------
+        min_freq, max_freq : float
+            Frequency search bounds in cycles/day.
+        samples_per_peak : int
+            Oversampling factor for the frequency grid.
+        smoothing_sigma : float
+            Gaussian kernel σ (in frequency-grid steps) for spectrum smoothing.
+        n_bootstrap : int
+            Number of bootstrap resamples.
+
+        Returns
+        -------
+        float
+            The best period; 0.0 if the timeseries is empty. Bootstrap
+            statistics are stored on `sr_stats`.
+        """
         if self.timeseries.timeseries_df.is_empty():
             return 0.0
         t, y, dy = self._get_tyd()
@@ -245,13 +323,18 @@ class LightCurve:
         save_path: str | None = None,
         ax: plt.Axes | None = None,
     ) -> None:
-        """
-        Plot the Lomb-Scargle power spectrum.
+        """Plot the Lomb-Scargle power spectrum.
 
         Parameters
         ----------
         use_frequency : bool
             Plot frequency (x-axis) instead of period.
+        fig_size : tuple
+            Figure size in inches, used only when `ax` is None.
+        save_path : str, optional
+            If given, save the figure to this path.
+        ax : plt.Axes, optional
+            Existing axes to draw on; a new figure is created if None.
         """
         if not self.power_spectra:
             self.run_ls()
@@ -313,9 +396,7 @@ class LightCurve:
         ax: plt.Axes | None = None,
         dots: list[str] | None = None,
     ) -> None:
-        """
-        Plot the phase-folded light curve with an optional model fit and
-        residuals panel.
+        """Plot the phase-folded light curve with an optional model fit and residuals panel.
 
         This method replaces ``plot_light_curve``, ``plot_light_curve_temp``,
         and ``plot_light_curve_v2``.
@@ -324,12 +405,26 @@ class LightCurve:
         ----------
         period : float | None
             Override period.  Defaults to ``self.periods[0]`` (or runs LS).
+        mag_col : str, optional
+            Magnitude column to plot. Defaults to `timeseries.mag_col`.
+        err_col : str, optional
+            Error column to plot. Defaults to `timeseries.err_col`.
+        band_name : str
+            Photometric band label used in the y-axis title.
+        n_harmonics : int
+            Number of harmonics for the Fourier fit (when `fit_model='fourier'`).
         fit_model : str | None
             ``'fourier'`` — n-harmonic Fourier series.
             ``'gaussian'`` — Double Super-Gaussian (good for EBs).
             ``None`` — no model fit.
         show_residuals : bool
             Attach a residuals panel below the main plot.
+        fig_size : tuple
+            Figure size in inches, used only when `ax` is None.
+        save_path : str | Path, optional
+            If given, save the figure to this path.
+        ax : plt.Axes, optional
+            Existing axes to draw on; a new figure is created if None.
         dots : list[str] | None
             List of colour strings for status indicator dots in the top-left
             corner (e.g. ``['blue', 'red']``).
@@ -533,14 +628,15 @@ class LightCurve:
         force_fourier_harmonics: int | None = None,
         **kwargs,
     ) -> None:
-        """
-        Find the best period, check for eclipsing binary morphology, and plot.
+        """Find the best period, check for eclipsing binary morphology, and plot.
 
         This method replaces ``plot_best_period``, ``plot_best_period_temp``,
         and ``plot_best_period_v2``.
 
         Parameters
         ----------
+        mag_col : str, optional
+            Magnitude column to plot. Defaults to `timeseries.mag_col`.
         fit_model : str
             Starting fit model.  If EB is detected and *force_fourier_harmonics*
             is not set, this is overridden to ``'gaussian'``.
@@ -550,6 +646,8 @@ class LightCurve:
             Show the residuals panel.
         force_fourier_harmonics : int | None
             If set, always use Fourier with this many harmonics (skips EB check).
+        **kwargs
+            Passed through to `plot_phased` (e.g. `fig_size`, `save_path`, `ax`).
         """
         # Import here to avoid circular dependency
         from varistar.classify.eb_detector import score_eb
@@ -596,16 +694,18 @@ class LightCurve:
             **kwargs,
         )
 
-    # Old name aliases
     def plot_best_period(self, **kwargs) -> None:
+        """Call `plot_best` without residuals. Deprecated alias."""
         kwargs.setdefault("show_residuals", False)
         self.plot_best(**kwargs)
 
     def plot_best_period_temp(self, **kwargs) -> None:
+        """Call `plot_best` with residuals. Deprecated alias."""
         kwargs.setdefault("show_residuals", True)
         self.plot_best(**kwargs)
 
     def plot_best_period_v2(self, **kwargs) -> None:
+        """Call `plot_best` with residuals. Deprecated alias."""
         kwargs.setdefault("show_residuals", True)
         self.plot_best(**kwargs)
 
@@ -614,6 +714,14 @@ class LightCurve:
     # ------------------------------------------------------------------
 
     def to_dict(self) -> dict:
+        """Serialize the light curve's derived results to a plain dict.
+
+        Returns
+        -------
+        dict
+            With keys ``timeseries_id``, ``periods`` (rounded to 7
+            decimals), ``is_periodic``, and ``is_harmonic``.
+        """
         return {
             "timeseries_id": self.timeseries.timeseries_id,
             "periods": [float(round(p, 7)) for p in self.periods],
@@ -650,8 +758,8 @@ class LightCurve:
         period: float | None,
         ax: plt.Axes | None,
     ) -> float | None:
-        """
-        Return a valid period, running LS if needed.
+        """Return a valid period, running LS if needed.
+
         Posts an error message to *ax* (or prints) and returns None on failure.
         """
         if period is not None:

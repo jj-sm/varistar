@@ -1,7 +1,4 @@
-"""
-varistar.catalog.gaiadr3
-========================
-Loader for Gaia DR3 epoch photometry CSV files.
+"""Loader for Gaia DR3 epoch photometry CSV files.
 
 Gaia epoch photometry files are downloaded from the Gaia archive as CSV with the
 filename pattern::

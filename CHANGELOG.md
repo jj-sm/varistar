@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.1.12 - 2026-09-15
+
+- Standarized and updated multiple support files, citations, authors, etc.
+
 ## v0.1.11 - 2026-09-15
 
 - Fixed `varistar.catalog` raising `ModuleNotFoundError` on import — it referenced a `varistar.catalog.gaia` module that was never created; the dead import/export has been removed (`gaiadr3.py` already covers Gaia data loading).

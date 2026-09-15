@@ -13,7 +13,7 @@ Quick start
 >>> lc.plot_best()
 """
 
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 
 from varistar.timeseries import TimeSeries
 from varistar.lightcurve import LightCurve

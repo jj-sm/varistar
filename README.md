@@ -1,4 +1,4 @@
-# varistar 🌟
+# varistar \~\*\~
 
 
 [![PyPI - Version](https://img.shields.io/pypi/v/varistar?style=flat-round)](https://pypi.org/project/varistar/)
@@ -7,8 +7,13 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22772940.svg)](https://doi.org/10.5281/zenodo.22772940)
 
 
-**varistar** is a Python package designed to simplify the management and interaction with timeseries and lightcurve data 
+`varistar` is a Python package designed to simplify the management and interaction with timeseries and lightcurve data 
 coming from multiple sources.
+
+<p align="center">
+  <img src="/markdown/EB.png" alt="example binary star image">
+</p>
+
 
 ---
 
@@ -36,6 +41,31 @@ uv add varistar
 ## Documentation and Usage
 
 All the docs can be found at [docs.jjsm.science/varistar](https://docs.jjsm.science/varistar)
+
+## Citation
+
+```bibtex
+@software{sanchez_medina_2026_22775284,
+  author       = {Sánchez Medina, Juan José},
+  title        = {varistar Python Package},
+  month        = sep,
+  year         = 2026,
+  publisher    = {Zenodo},
+  version      = {v0.1.12},
+  doi          = {10.5281/zenodo.22775284},
+  url          = {https://doi.org/10.5281/zenodo.22775284},
+  swhid        = {swh:1:dir:841ac30ec6b30ec2ae1281c227b87b6c8b114ad3
+                   ;origin=https://doi.org/10.5281/zenodo.22772939;vi
+                   sit=swh:1:snp:6151bc2d06ff905533ed69544d9b9893b5e5
+                   9179;anchor=swh:1:rel:de9138bf25a85f4c6f5ad344dc1d
+                   f2aa95fff8e4;path=jj-sm-varistar-f1d4611
+                  },
+}
+```
+
+> [!TIP]
+> Export latest BibTeX citation from [zenodo.org/records/22775284/export/bibtex](https://zenodo.org/records/22775284/export/bibtex)
+
 
 ## Development
 

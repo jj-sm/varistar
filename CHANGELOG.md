@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.1.13 - 2026-09-15
+
+- Updated zenodo metadata
+
+
 ## v0.1.12 - 2026-09-15
 
 - Standarized and updated multiple support files, citations, authors, etc.

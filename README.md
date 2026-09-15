@@ -1,8 +1,11 @@
 # varistar 🌟
 
-![PyPI - Version](https://img.shields.io/pypi/v/varistar?style=flat-square)
-![PyPI - License](https://img.shields.io/pypi/l/varistar?style=flat-square)
-[![Python Versions](https://img.shields.io/pypi/pyversions/varistar.svg?style=flat-square)](https://pypi.org/project/varistar/)
+
+[![PyPI - Version](https://img.shields.io/pypi/v/varistar?style=flat-round)](https://pypi.org/project/varistar/)
+[![PyPI - License](https://img.shields.io/pypi/l/varistar?style=flat-round)](https://pypi.org/project/varistar/)
+[![Python Versions](https://img.shields.io/pypi/pyversions/varistar.svg?style=flat-round)](https://pypi.org/project/varistar/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22772940.svg)](https://doi.org/10.5281/zenodo.22772940)
+
 
 **varistar** is a Python package designed to simplify the management and interaction with timeseries and lightcurve data 
 coming from multiple sources.

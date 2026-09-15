@@ -1,5 +1,9 @@
 .PHONY: lint format-check test check release
 
+# Derived from the origin remote so `gh` calls work regardless of the
+# invoking shell's `gh repo set-default` state.
+GH_REPO := $(shell gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null)
+
 # --- Local checks -----------------------------------------------------------
 # `check` mirrors exactly what .github/workflows/publish.yml gates a release
 # on: ruff check + pytest. `format-check` mirrors lint.yml's formatting
@@ -59,7 +63,7 @@ endif
 	@sleep 5
 	@run_id=""; \
 	for i in $$(seq 1 30); do \
-		run_id=$$(gh run list --workflow=publish.yml --branch v$(VERSION) --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null); \
+		run_id=$$(gh run list --repo $(GH_REPO) --workflow=publish.yml --branch v$(VERSION) --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null); \
 		[ -n "$$run_id" ] && break; \
 		sleep 2; \
 	done; \
@@ -68,13 +72,13 @@ endif
 		exit 1; \
 	fi; \
 	echo "Watching run $$run_id"; \
-	gh run watch $$run_id --exit-status; \
+	gh run watch $$run_id --repo $(GH_REPO) --exit-status; \
 	if [ $$? -ne 0 ]; then \
 		echo "Publish workflow failed. Not creating a GitHub release."; \
 		exit 1; \
 	fi
 
 	@echo "==> Creating GitHub release v$(VERSION)"
-	gh release create v$(VERSION) --title "v$(VERSION)" --generate-notes
+	gh release create v$(VERSION) --repo $(GH_REPO) --title "v$(VERSION)" --generate-notes
 
 	@echo "==> Done. Released v$(VERSION) to PyPI and GitHub."

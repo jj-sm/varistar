@@ -52,9 +52,35 @@ This project is built using the latest Python standards. If you are using this a
     uv run pytest
     ```
 
+### Releasing
+
+Releases are cut with the `Makefile`, which runs lint + tests locally, bumps
+the version, pushes, tags, waits for the PyPI publish workflow to succeed,
+and only then creates the GitHub release:
+
+```bash
+make check              # ruff check + pytest (same gate as CI)
+make lint                # ruff check only
+make test                # pytest only
+make format-check        # ruff format --check (advisory, not release-blocking)
+
+make release VERSION=0.1.12
+```
+
+`make release` requires a clean working tree on `main`, up to date with
+`origin/main`. It bumps the version in `pyproject.toml` and
+`src/varistar/__init__.py`, commits (`chore: release vX.Y.Z`), pushes,
+tags `vX.Y.Z`, pushes the tag (which triggers
+[`.github/workflows/publish.yml`](.github/workflows/publish.yml) to test
+and publish to PyPI), watches that workflow, and creates the GitHub
+release only if it succeeds — a release is never created for a version
+that failed to publish.
+
+See [CHANGELOG.md](CHANGELOG.md) for release history.
+
 ## License
 
-This project is licensed under the **GNU General Public License v3 (GPLv3)**. This ensures the software remains free and open for the scientific community. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**. See the [LICENSE.md](LICENSE.md) file for details.
 
 ## Contributing
 

@@ -1,27 +1,49 @@
-# This CITATION.cff file was generated with cffinit.
-# Visit https://bit.ly/cffinit to generate yours today!
-
 cff-version: 1.2.0
-title: varistar Python Package
-message: varistar is a Python package helps users manage and interact with possible variable star's data.
+title: "varistar Python Package"
+message: "If you use varistar in your research, please cite it using this information."
 type: software
+
 authors:
-  - given-names: Juan José
-    family-names: Sánchez Medina
-    email: projects@jjsm.science
-    affiliation: Pontificia Universidad Católica de Chile
-    orcid: 'https://orcid.org/0009-0005-4685-695X'
-repository-code: 'https://github.com/jj-sm/varistar/'
-url: 'https://docs.jj-sm.science/varistar/'
-repository: 'https://github.com/jj-sm/varistar/'
+  - given-names: "Juan José"
+    family-names: "Sánchez Medina"
+    email: "hello@jjsm.science"
+    affiliation: "Pontificia Universidad Católica de Chile"
+    orcid: "https://orcid.org/0009-0005-4685-695X"
+
+contributors:
+  - given-names: "Alejandro"
+    family-names: "Garcia-Varela"
+    affiliation: "Universidad de los Andes"
+    orcid: "https://orcid.org/0000-0001-8351-0628"
+    type: "Supervisor"
+
+repository-code: "https://github.com/jj-sm/varistar"
+url: "https://docs.jj-sm.science/varistar"
+
 abstract: >-
-  varistar is a Python package helps users manage and interact with possible variable star's data.
-  
-  It provides tools to visualize, clean and prepare data from timeseries into lightcurves. Also, it features
-  a features class which could help prepare data for ML models to automate classification of stars.
+  varistar is a Python package for managing and interacting with variable-star
+  data. It provides tools to visualize, clean, and prepare time-series data
+  into light curves, as well as tools for preparing features for machine
+  learning models for automated stellar classification.
+
 keywords:
   - Python
   - Variable Stars
   - Astrophysics
+  - Astronomy
+  - Machine Learning
+  - Light Curves
+  - Time Series
+
 license: MIT
-date-released: '2026-03-07'
+
+preferred-citation:
+  type: software
+  authors:
+    - given-names: "Juan José"
+      family-names: "Sánchez Medina"
+      email: "hello@jjsm.science"
+      affiliation: "Pontificia Universidad Católica de Chile"
+      orcid: "https://orcid.org/0009-0005-4685-695X"
+  title: "varistar Python Package"
+

@@ -33,6 +33,7 @@ __all__ = [
     "from_arrays",
     "load_fits",
     "load_from_tic",
+    "load_gaia",
     "gaiadr3_load_csv",
     "gaiadr3_load_csv_directory",
     "parse_gaia_id",

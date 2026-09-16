@@ -5,9 +5,56 @@
   "description": "varistar is a Python package that helps users manage and interact with variable-star data. It provides tools to visualize, clean, and prepare time-series data into light curves, as well as features for preparing data for machine-learning models for automated stellar classification.",
   "creators": [
     {
-      "name": "Sánchez Medina, Juan José",
-      "orcid": "0009-0005-4685-695X",
-      "affiliation": "Pontificia Universidad Católica de Chile"
+      "affiliations": [
+        {
+          "name": "Pontificia Universidad Católica de Chile"
+        }
+      ],
+      "person_or_org": {
+        "family_name": "Sánchez Medina",
+        "given_name": "Juan José",
+        "identifiers": [
+          {
+            "identifier": "0009-0005-4685-695X",
+            "scheme": "orcid"
+          }
+        ],
+        "name": "Sánchez Medina, Juan José",
+        "type": "personal"
+      },
+      "role": {
+        "id": "researcher",
+        "title": {
+          "de": "WissenschaftlerIn",
+          "en": "Researcher"
+        }
+      }
+    },
+    {
+      "affiliations": [
+        {
+          "name": "Universidad de los Andes"
+        }
+      ],
+      "person_or_org": {
+        "family_name": "Garcia-Varela",
+        "given_name": "Alejandro",
+        "identifiers": [
+          {
+            "identifier": "0000-0001-8351-0628",
+            "scheme": "orcid"
+          }
+        ],
+        "name": "Garcia-Varela, Alejandro",
+        "type": "personal"
+      },
+      "role": {
+        "id": "supervisor",
+        "title": {
+          "de": "SupervisorIn",
+          "en": "Supervisor"
+        }
+      }
     }
   ],
   "contributors": [

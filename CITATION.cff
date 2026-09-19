@@ -5,7 +5,7 @@ type: software
 
 authors:
   - given-names: "Juan José"
-    family-names: "Sánchez Medina"
+    family-names: "Sánchez-Medina"
     email: "hello@jjsm.science"
     affiliation: "Pontificia Universidad Católica de Chile"
     orcid: "https://orcid.org/0009-0005-4685-695X"
@@ -41,7 +41,7 @@ preferred-citation:
   type: software
   authors:
     - given-names: "Juan José"
-      family-names: "Sánchez Medina"
+      family-names: "Sánchez-Medina"
       email: "hello@jjsm.science"
       affiliation: "Pontificia Universidad Católica de Chile"
       orcid: "https://orcid.org/0009-0005-4685-695X"

@@ -46,12 +46,13 @@ All the docs can be found at [docs.jjsm.science/varistar](https://docs.jjsm.scie
 
 ```bibtex
 @software{sanchez_medina_2026_22775284,
-  author       = {Sánchez Medina, Juan José},
+  author       = {Sánchez-Medina, Juan José and
+                  Garcia-Varela, Alejandro},
   title        = {varistar Python Package},
   month        = sep,
   year         = 2026,
   publisher    = {Zenodo},
-  version      = {v0.1.12},
+  version      = {v0.1.14},
   doi          = {10.5281/zenodo.22775284},
   url          = {https://doi.org/10.5281/zenodo.22775284},
   swhid        = {swh:1:dir:841ac30ec6b30ec2ae1281c227b87b6c8b114ad3

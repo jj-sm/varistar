@@ -11,7 +11,7 @@
         }
       ],
       "person_or_org": {
-        "family_name": "Sánchez Medina",
+        "family_name": "Sánchez-Medina",
         "given_name": "Juan José",
         "identifiers": [
           {
@@ -19,7 +19,7 @@
             "scheme": "orcid"
           }
         ],
-        "name": "Sánchez Medina, Juan José",
+        "name": "Sánchez-Medina, Juan José",
         "type": "personal"
       },
       "role": {

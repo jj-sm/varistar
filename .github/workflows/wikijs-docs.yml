@@ -8,8 +8,7 @@ on:
     branches: [main]
     paths:
       - 'docs/**'
-      - '.github/scripts/wikijs_sync.py'
-      - '.github/workflows/wikijs-docs.yml'
+  # Manual runs (Actions tab) for when only the script or workflow changed.
   workflow_dispatch:
 
 concurrency:

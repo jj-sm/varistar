@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""
+r"""
 Publish a project's docs folder (Markdown, Quarto .qmd and Jupyter .ipynb)
 to a Wiki.js v3 site through its REST API.
 
-    WIKI_URL=https://documentation.jjsm.science \
-    WIKI_API_KEY=... WIKI_SITE_ID=<site uuid> \
+    WIKI_URL=https://documentation.jjsm.science WIKI_SITE_ID=<site uuid> \
+    WIKI_USERNAME=<local account email> WIKI_PASSWORD=... \
     python wikijs_sync.py --src docs --prefix astronomy/varistar --tags astronomy,python
 
   docs/index.md            -> /astronomy/varistar
@@ -25,6 +25,7 @@ Only the Python standard library is used. Quarto must be on PATH for
 """
 import argparse
 import base64
+import http.cookiejar
 import json
 import mimetypes
 import os
@@ -33,6 +34,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -253,62 +255,93 @@ def build_page(src: Path, execute: bool) -> tuple[str, str]:
 # --------------------------------------------------------------------------
 
 class Wiki:
-    def __init__(self, url, key, site):
-        self.base = url.rstrip("/") + "/_api/sites/" + site
-        self.key = key
+    """Wiki.js v3 REST client (tested against 3.0.0-beta.631).
 
-    def _req(self, method, path, body=None, query=None):
+    Saving a page needs a logged-in user (API keys carry no author), so this
+    logs in with a local account and keeps the session cookie. The server
+    doesn't render Markdown itself: after every save the page is queued for
+    its headless-browser render (needs the Puppeteer extension).
+    """
+
+    def __init__(self, url, site):
+        self.base = url.rstrip("/") + "/_api/sites/" + site
+        self.http = urllib.request.build_opener(
+            urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+
+    def _req(self, method, path, body=None, query=None, retries=5):
         url = self.base + path
         if query:
             url += "?" + urllib.parse.urlencode(query)
         data = json.dumps(body).encode() if body is not None else None
         req = urllib.request.Request(url, data=data, method=method, headers={
-            "X-API-Key": self.key,
             "Content-Type": "application/json",
             "Accept": "application/json",
         })
         try:
-            with urllib.request.urlopen(req, timeout=60) as r:
+            with self.http.open(req, timeout=60) as r:
                 raw = r.read()
                 return json.loads(raw) if raw else None
         except urllib.error.HTTPError as e:
             if e.code == 404 and method == "GET":
                 return None
+            if e.code == 429 and retries:            # the render queue is rate limited
+                time.sleep(int(e.headers.get("Retry-After") or 10))
+                return self._req(method, path, body, query, retries - 1)
             detail = e.read().decode(errors="replace")[:500]
             raise SystemExit(f"{method} {url} -> HTTP {e.code}: {detail}")
 
-    def find(self, path):
-        res = self._req("GET", "/pages", query={"path": path})
-        if not res:
-            return None
-        if isinstance(res, dict):
-            for key in ("pages", "items", "data", "results"):
-                if isinstance(res.get(key), list):
-                    res = res[key]
-                    break
-        if isinstance(res, dict):
-            return res if res.get("path", path) == path else None
-        for p in res:
-            if p.get("path") == path:
-                return p
-        return None
+    def login(self, username, password):
+        strategies = self._req("GET", "/auth/strategies") or []
+        local = next((s for s in strategies
+                      if s.get("activeStrategy", {}).get("strategy", {}).get("key") == "local"), None)
+        if not local:
+            raise SystemExit("no local authentication strategy on this site")
+        res = self._req("PUT", "/auth/login",
+                        {"strategyId": local["id"], "username": username, "password": password}) or {}
+        if not res.get("authenticated"):
+            raise SystemExit(f"login as {username} did not complete (nextAction: {res.get('nextAction')})")
 
-    def upsert(self, path, title, content, tags, dry_run=False):
-        page = self.find(path)
-        body = {"path": path, "title": title, "editor": "markdown", "content": content,
-                "reasonForChange": "Synced from GitHub"}
+    def logout(self):
+        self._req("POST", "/auth/logout", {})
+
+    def page_index(self, prefix):
+        """{path: id} of the pages at or under prefix (there is no lookup by path)."""
+        parent = prefix.rsplit("/", 1)[0] if "/" in prefix else ""
+        index, offset, limit = {}, 0, 500
+        while True:
+            query = {"types": "page", "depth": 10, "limit": limit, "offset": offset}
+            if parent:
+                query["parentPath"] = parent
+            rows = self._req("GET", "/tree", query=query) or []
+            for row in rows:
+                path = "/".join(p for p in [(row.get("folderPath") or "").strip("/"), row.get("fileName") or ""] if p)
+                index[path.lower()] = row["id"]
+            if len(rows) < limit:
+                break
+            offset += limit
+        return {p: i for p, i in index.items() if p == prefix or p.startswith(prefix + "/")}
+
+    def upsert(self, page_id, path, title, content, tags):
+        body = {"title": title, "content": content, "reasonForChange": "Synced from GitHub"}
         if tags:
             body["tags"] = tags
-        if dry_run:
-            print(f"  [dry-run] {'update' if page else 'create'} /{path} ({title})")
-            return
-        if page:
-            self._req("PUT", f"/pages/{page['id']}", body)
+        if page_id:
+            current = self._req("GET", f"/pages/{page_id}", query={"withContent": "true"}) or {}
+            current = current.get("page", current)
+            if current.get("content") == content and current.get("title") == title:
+                print(f"  unchanged /{path}")
+                return
+            self._req("PATCH", f"/pages/{page_id}", body)
             print(f"  updated /{path}")
         else:
-            body["publishState"] = "published"
-            self._req("POST", "/pages", body)
+            body.update({"path": path, "editor": "markdown", "publishState": "published"})
+            res = self._req("POST", "/pages", body) or {}
+            page_id = (res.get("page") or {}).get("id")
+            if not page_id:
+                raise SystemExit(f"POST /pages for /{path} answered without a page id: {json.dumps(res)[:500]}")
             print(f"  created /{path}")
+        self._req("POST", f"/pages/{page_id}/render")
+        print("    render queued")
 
 
 # --------------------------------------------------------------------------
@@ -331,6 +364,7 @@ def main():
     ap.add_argument("--no-pagetools", action="store_true", help="do not add the Page Tools block on top")
     ap.add_argument("--execute", action="store_true", help="execute notebooks before rendering")
     ap.add_argument("--dry-run", action="store_true", help="render but do not publish")
+    ap.add_argument("--list", action="store_true", help="log in, list the pages under --prefix and exit")
     ap.add_argument("--only", nargs="*", help="only these files (relative to --src)")
     args = ap.parse_args()
 
@@ -343,14 +377,29 @@ def main():
         wanted = {str(Path(o)) for o in args.only}
         files = [f for f in files if str(f.relative_to(src)) in wanted]
 
-    wiki = None
+    prefix = args.prefix.strip("/").lower()
+    wiki, index = None, {}
     if not args.dry_run:
         try:
-            wiki = Wiki(os.environ["WIKI_URL"], os.environ["WIKI_API_KEY"], os.environ["WIKI_SITE_ID"])
+            wiki = Wiki(os.environ["WIKI_URL"], os.environ["WIKI_SITE_ID"])
+            wiki.login(os.environ["WIKI_USERNAME"], os.environ["WIKI_PASSWORD"])
         except KeyError as e:
             raise SystemExit(f"missing environment variable {e}")
-    tags = [t.strip() for t in args.tags.split(",") if t.strip()]
+    try:
+        if wiki:
+            index = wiki.page_index(prefix)
+        if args.list:
+            for path, page_id in sorted(index.items()):
+                print(f"/{path}  ({page_id})")
+            return
+        sync(args, src, files, wiki, index)
+    finally:
+        if wiki:
+            wiki.logout()
 
+
+def sync(args, src, files, wiki, index):
+    tags = [t.strip() for t in args.tags.split(",") if t.strip()]
     for f in files:
         rel = f.relative_to(src)
         meta = source_front_matter(f)
@@ -374,7 +423,7 @@ def main():
             out.write_text(f"<!-- title: {title} -->\n{content}", encoding="utf-8")
             print(f"  [dry-run] wrote {out}")
         else:
-            wiki.upsert(path, title, content, tags)
+            wiki.upsert(index.get(path.lower()), path, title, content, tags)
 
 
 if __name__ == "__main__":

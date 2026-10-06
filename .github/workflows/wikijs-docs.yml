@@ -1,5 +1,5 @@
 # Publishes docs/ (Jupyter .ipynb, plus any .qmd/.md) to https://documentation.jjsm.science
-# Repo secrets needed: WIKI_API_KEY, WIKI_SITE_ID, CF_API_TOKEN, CF_ZONE_ID
+# Repo secrets needed: WIKI_USERNAME, WIKI_PASSWORD, WIKI_SITE_ID, CF_API_TOKEN, CF_ZONE_ID
 # docs/ lives only on GitHub: MANIFEST.in prunes it from the PyPI sdist.
 name: Publish docs to Wiki.js
 
@@ -63,7 +63,9 @@ jobs:
       - name: Publish
         env:
           WIKI_URL: https://documentation.jjsm.science
-          WIKI_API_KEY: ${{ secrets.WIKI_API_KEY }}
+          # Saving pages needs a logged-in user; Wiki.js API keys can't author pages.
+          WIKI_USERNAME: ${{ secrets.WIKI_USERNAME }}
+          WIKI_PASSWORD: ${{ secrets.WIKI_PASSWORD }}
           WIKI_SITE_ID: ${{ secrets.WIKI_SITE_ID }}
         run: |
           python .github/scripts/wikijs_sync.py \

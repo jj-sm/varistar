@@ -273,10 +273,10 @@ class Wiki:
         if query:
             url += "?" + urllib.parse.urlencode(query)
         data = json.dumps(body).encode() if body is not None else None
-        req = urllib.request.Request(url, data=data, method=method, headers={
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        })
+        headers = {"Accept": "application/json"}
+        if data is not None:              # Fastify rejects an empty body declared as JSON
+            headers["Content-Type"] = "application/json"
+        req = urllib.request.Request(url, data=data, method=method, headers=headers)
         try:
             with self.http.open(req, timeout=60) as r:
                 raw = r.read()
@@ -329,10 +329,13 @@ class Wiki:
             current = self._req("GET", f"/pages/{page_id}", query={"withContent": "true"}) or {}
             current = current.get("page", current)
             if current.get("content") == content and current.get("title") == title:
-                print(f"  unchanged /{path}")
-                return
-            self._req("PATCH", f"/pages/{page_id}", body)
-            print(f"  updated /{path}")
+                if current.get("render"):
+                    print(f"  unchanged /{path}")
+                    return
+                print(f"  unchanged /{path}, but never rendered")
+            else:
+                self._req("PATCH", f"/pages/{page_id}", body)
+                print(f"  updated /{path}")
         else:
             body.update({"path": path, "editor": "markdown", "publishState": "published"})
             res = self._req("POST", "/pages", body) or {}

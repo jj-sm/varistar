@@ -1,5 +1,5 @@
 # Publishes docs/ (Jupyter .ipynb, plus any .qmd/.md) to https://documentation.jjsm.science
-# Repo secrets needed: WIKI_API_KEY, WIKI_SITE_ID
+# Repo secrets needed: WIKI_API_KEY, WIKI_SITE_ID, CF_API_TOKEN, CF_ZONE_ID
 # docs/ lives only on GitHub: MANIFEST.in prunes it from the PyPI sdist.
 name: Publish docs to Wiki.js
 
@@ -31,7 +31,28 @@ jobs:
         with:
           python-version: '3.12'
 
-      # The .qmd files store no outputs, so they are executed (--execute)
+      # Cloudflare's Bot Fight Mode challenges GitHub's (Azure) runner IPs and
+      # can't be skipped by WAF rules, only by an IP Access "allow" rule. Runner
+      # IPs change every run, so allow just this runner's IP while the job runs
+      # (created here, before the install, so it has time to propagate).
+      - name: Allow this runner through Cloudflare
+        id: cf_allow
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+        run: |
+          ip=$(curl -fsS https://www.cloudflare.com/cdn-cgi/trace | sed -n 's/^ip=//p')
+          [ -n "$ip" ] || { echo "Could not determine the runner's public IP"; exit 1; }
+          echo "Runner IP as seen by Cloudflare: $ip"
+          resp=$(curl -sS -X POST "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/firewall/access_rules/rules" \
+            -H "Authorization: Bearer $CF_API_TOKEN" -H "Content-Type: application/json" \
+            --data "{\"mode\":\"whitelist\",\"configuration\":{\"target\":\"ip\",\"value\":\"$ip\"},\"notes\":\"Temporary: $GITHUB_REPOSITORY wikijs-docs run $GITHUB_RUN_ID\"}")
+          if [ "$(echo "$resp" | jq -r '.success')" != "true" ]; then
+            echo "$resp"; exit 1
+          fi
+          echo "rule_id=$(echo "$resp" | jq -r '.result.id')" >> "$GITHUB_OUTPUT"
+
+      # The notebooks store no outputs, so they are executed (--execute)
       # against this checkout of varistar.
       - name: Install Jupyter + project
         run: |
@@ -50,3 +71,12 @@ jobs:
             --prefix astrophysics/varistar \
             --tags astrophysics,python \
             --execute
+
+      - name: Remove the temporary Cloudflare rule
+        if: always() && steps.cf_allow.outputs.rule_id != ''
+        env:
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CF_ZONE_ID: ${{ secrets.CF_ZONE_ID }}
+        run: |
+          curl -sS -X DELETE "https://api.cloudflare.com/client/v4/zones/$CF_ZONE_ID/firewall/access_rules/rules/${{ steps.cf_allow.outputs.rule_id }}" \
+            -H "Authorization: Bearer $CF_API_TOKEN" | jq '{success, errors}'

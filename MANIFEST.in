@@ -1,0 +1,2 @@
+# Docs are published to the wiki from GitHub, never shipped on PyPI.
+prune docs

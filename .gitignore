@@ -301,3 +301,11 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,python,vscode,intellij+all
 
+
+# Quarto docs (docs/ is published to Wiki.js, not shipped with the package)
+/.quarto/
+**/*.quarto_ipynb
+docs/*.qmd
+docs/*_files/
+docs/_scratch/
+wikisync-preview/

@@ -1,4 +1,4 @@
-.PHONY: lint format-check test check release
+.PHONY: lint format-check test check docs-qmd release
 
 # Derived from the origin remote so `gh` calls work regardless of the
 # invoking shell's `gh repo set-default` state.
@@ -20,6 +20,14 @@ test:
 	uv run pytest
 
 check: lint test
+
+# --- Docs ---------------------------------------------------------------
+# docs/*.ipynb are the source. The wiki publishes them directly
+# (.github/workflows/wikijs-docs.yml); `docs-qmd` generates .qmd copies
+# (gitignored) for tools that want Quarto Markdown, e.g. Docusaurus.
+
+docs-qmd:
+	@for nb in docs/*.ipynb; do quarto convert "$$nb"; done
 
 # --- Release ------------------------------------------------------------
 # Usage: make release VERSION=0.1.12

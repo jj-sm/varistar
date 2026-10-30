@@ -61,7 +61,7 @@ jobs:
 
       - name: Publish
         env:
-          WIKI_URL: https://documentation.jjsm.science
+          WIKI_URL: https://docs.jjsm.science
           # Saving pages needs a logged-in user; Wiki.js API keys can't author pages.
           WIKI_USERNAME: ${{ secrets.WIKI_USERNAME }}
           WIKI_PASSWORD: ${{ secrets.WIKI_PASSWORD }}
